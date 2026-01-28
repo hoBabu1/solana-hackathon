@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useState } from "react";
 import { Menu, X, Eye } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { WalletButton } from "@/components/wallet/WalletButton";
 
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -37,7 +36,6 @@ export function Navbar() {
                 {link.label}
               </Link>
             ))}
-            <WalletButton className="!bg-gradient-to-r !from-[#00fff9] !to-[#b026ff] !text-black !font-bold !rounded-xl !h-10" />
           </div>
 
           {/* Mobile menu button */}
@@ -70,9 +68,6 @@ export function Navbar() {
                   {link.label}
                 </Link>
               ))}
-              <div className="pt-2">
-                <WalletButton className="!w-full !bg-gradient-to-r !from-[#00fff9] !to-[#b026ff] !text-black !font-bold !rounded-xl" />
-              </div>
             </div>
           </motion.div>
         )}

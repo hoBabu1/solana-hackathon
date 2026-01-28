@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useWallet } from "@solana/wallet-adapter-react";
 import { motion } from "framer-motion";
 import { ScanResults } from "@/components/scanner/ScanResults";
 import { analyzeWallet } from "@/lib/scanner";
@@ -11,11 +10,9 @@ import { useProgress } from "@/hooks/useProgress";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { WalletButton } from "@/components/wallet/WalletButton";
-import { Eye, Search, Wallet, ArrowRight } from "lucide-react";
+import { Eye, Search } from "lucide-react";
 
 export default function ScanPage() {
-  const { publicKey, connected } = useWallet();
   const [isLoading, setIsLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
   const [analysis, setAnalysis] = useState<WalletAnalysis | null>(null);
@@ -163,63 +160,6 @@ export default function ScanPage() {
                   )}
                 </Button>
               </div>
-            </div>
-          </Card>
-        </motion.div>
-
-        {/* Divider */}
-        <div className="flex items-center gap-4 my-6">
-          <div className="flex-1 h-px bg-white/10" />
-          <span className="text-white/40 text-sm">or</span>
-          <div className="flex-1 h-px bg-white/10" />
-        </div>
-
-        {/* Connected Wallet Option */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <Card className="border-[#b026ff]/30">
-            <div className="p-6">
-              <div className="flex items-center gap-2 mb-4">
-                <Wallet className="w-5 h-5 text-[#b026ff]" />
-                <h3 className="font-semibold">Use Connected Wallet</h3>
-              </div>
-
-              {!connected ? (
-                <div className="text-center">
-                  <p className="text-sm text-white/60 mb-4">
-                    Connect your wallet to quickly scan your own address
-                  </p>
-                  <WalletButton className="!bg-gradient-to-r !from-[#b026ff] !to-[#00fff9] !text-black !font-bold !rounded-xl" />
-                </div>
-              ) : (
-                <div>
-                  <p className="text-sm text-white/60 mb-2">Connected wallet:</p>
-                  <div className="flex items-center gap-3 p-3 bg-white/5 rounded-lg mb-4">
-                    <div className="w-10 h-10 rounded-full bg-[#00ff9f]/20 flex items-center justify-center">
-                      <span className="text-lg">✓</span>
-                    </div>
-                    <code className="text-sm text-white/70 flex-1 truncate">
-                      {publicKey?.toBase58()}
-                    </code>
-                  </div>
-                  <Button
-                    onClick={() => handleScan(publicKey?.toBase58() || "")}
-                    isLoading={isLoading}
-                    variant="secondary"
-                    className="w-full"
-                  >
-                    {isLoading ? loadingMessage : (
-                      <>
-                        Scan My Wallet
-                        <ArrowRight className="w-4 h-4" />
-                      </>
-                    )}
-                  </Button>
-                </div>
-              )}
             </div>
           </Card>
         </motion.div>

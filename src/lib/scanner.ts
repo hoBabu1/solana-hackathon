@@ -535,7 +535,7 @@ async function fetchNFTsFromHelius(address: string): Promise<NFTHolding[]> {
   }
 }
 
-// Helius balance fetcher with proper token detection
+// Helius balance fetcher with proper token detection using DAS API
 async function fetchFromHelius(address: string, solPrice: number): Promise<{
   solBalance: number;
   tokens: TokenHolding[];
@@ -544,102 +544,135 @@ async function fetchFromHelius(address: string, solPrice: number): Promise<{
   try {
     console.log("Helius API call for:", address);
 
-    const [balanceRes, assetsRes] = await Promise.all([
-      fetch(`https://api.helius.xyz/v0/addresses/${address}/balances?api-key=${HELIUS_API_KEY}`),
-      fetch(`https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          jsonrpc: "2.0",
-          id: "walletspy",
-          method: "getAssetsByOwner",
-          params: {
-            ownerAddress: address,
-            page: 1,
-            limit: 100,
-            displayOptions: {
-              showFungible: true,
-              showNativeBalance: true,
-            },
+    // Use DAS API which returns full metadata and prices for fungible tokens
+    const assetsRes = await fetch(`https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: "walletspy",
+        method: "getAssetsByOwner",
+        params: {
+          ownerAddress: address,
+          page: 1,
+          limit: 1000,
+          displayOptions: {
+            showFungible: true,
+            showNativeBalance: true,
           },
-        }),
+        },
       }),
-    ]);
+    });
 
-    const balanceData = await balanceRes.json();
-    console.log("Helius balance data:", balanceData);
+    const assetsData = await assetsRes.json();
+    console.log("Helius DAS response:", assetsData);
 
-    const solBalance = (balanceData.nativeBalance || 0) / 1e9;
+    const items = assetsData.result?.items || [];
+    const nativeBalance = assetsData.result?.nativeBalance;
+
+    // Get SOL balance
+    const solBalance = nativeBalance?.lamports ? nativeBalance.lamports / 1e9 : 0;
     console.log("SOL balance:", solBalance);
 
-    // Get token mints for price lookup
-    const tokenList = balanceData.tokens || [];
-    console.log("Helius tokens:", tokenList);
+    // Process fungible tokens from DAS API
+    const fungibleTokens = items.filter((item: { interface: string }) =>
+      item.interface === "FungibleToken" || item.interface === "FungibleAsset"
+    );
 
-    const tokenMints = tokenList.map((t: { mint: string }) => t.mint);
+    console.log("Fungible tokens found:", fungibleTokens.length);
 
-    // Add SOL mint for price lookup
-    const allMints = [...tokenMints, "So11111111111111111111111111111111111111112"];
-    const prices = await fetchTokenPrices(allMints);
-    console.log("Token prices:", prices);
+    // Get mints for tokens without price info to fetch from Jupiter
+    const mintsNeedingPrices: string[] = [];
 
-    // Process tokens with prices
-    const tokens: TokenHolding[] = tokenList.map((t: {
-      mint: string;
-      amount: number;
-      decimals: number;
+    const tokens: TokenHolding[] = fungibleTokens.map((token: {
+      id: string;
+      content?: {
+        metadata?: { name?: string; symbol?: string };
+        links?: { image?: string };
+      };
+      token_info?: {
+        balance?: number;
+        decimals?: number;
+        price_info?: {
+          price_per_token?: number;
+          total_price?: number;
+          currency?: string;
+        };
+        symbol?: string;
+      };
     }) => {
-      const decimals = t.decimals || 9;
-      const amount = t.amount / Math.pow(10, decimals);
-      const price = prices[t.mint] || 0;
-      const knownToken = KNOWN_TOKENS[t.mint];
-      const isMemecoin = knownToken?.isMemecoin || !!MEMECOIN_MINTS[t.mint];
+      const mint = token.id;
+      const tokenInfo = token.token_info;
+      const metadata = token.content?.metadata;
+
+      const decimals = tokenInfo?.decimals || 9;
+      const rawBalance = tokenInfo?.balance || 0;
+      const amount = rawBalance / Math.pow(10, decimals);
+
+      // Get price from DAS API if available
+      const pricePerToken = tokenInfo?.price_info?.price_per_token || 0;
+      const totalPrice = tokenInfo?.price_info?.total_price || (amount * pricePerToken);
+
+      // If no price info, add to list to fetch from Jupiter
+      if (!pricePerToken && amount > 0) {
+        mintsNeedingPrices.push(mint);
+      }
+
+      const symbol = tokenInfo?.symbol || metadata?.symbol || KNOWN_TOKENS[mint]?.symbol || MEMECOIN_MINTS[mint] || mint.slice(0, 6) + "...";
+      const name = metadata?.name || KNOWN_TOKENS[mint]?.name || symbol;
+      const knownToken = KNOWN_TOKENS[mint];
+      const isMemecoin = knownToken?.isMemecoin || !!MEMECOIN_MINTS[mint];
 
       return {
-        symbol: knownToken?.symbol || MEMECOIN_MINTS[t.mint] || t.mint.slice(0, 6) + "...",
-        name: knownToken?.name || MEMECOIN_MINTS[t.mint] || "Unknown Token",
+        symbol,
+        name,
         amount,
         decimals,
-        usdValue: amount * price,
-        mint: t.mint,
+        usdValue: totalPrice,
+        mint,
         isMemecoin,
-        logoUrl: undefined,
+        logoUrl: token.content?.links?.image,
       };
     });
 
-    // Filter out zero amounts and sort by value
+    // Fetch prices from Jupiter for tokens without price info
+    if (mintsNeedingPrices.length > 0) {
+      console.log("Fetching prices from Jupiter for", mintsNeedingPrices.length, "tokens");
+      const jupiterPrices = await fetchTokenPrices(mintsNeedingPrices.slice(0, 100)); // Jupiter has a limit
+
+      for (const token of tokens) {
+        if (token.usdValue === 0 && jupiterPrices[token.mint]) {
+          token.usdValue = token.amount * jupiterPrices[token.mint];
+        }
+      }
+    }
+
+    // Filter out zero amounts and sort by USD value (highest first)
     const filteredTokens = tokens
       .filter(t => t.amount > 0)
       .sort((a, b) => b.usdValue - a.usdValue);
 
-    console.log("Processed tokens:", filteredTokens.length, "Total value:", filteredTokens.reduce((s, t) => s + t.usdValue, 0));
+    const totalValue = filteredTokens.reduce((s, t) => s + t.usdValue, 0);
+    console.log("Processed tokens:", filteredTokens.length, "Total value:", totalValue);
 
     // Get NFTs from DAS response
-    let nfts: NFTHolding[] = [];
-    try {
-      const assetsData = await assetsRes.json();
-      const items = assetsData.result?.items || [];
+    const nfts: NFTHolding[] = items
+      .filter((item: { interface: string }) =>
+        item.interface === "V1_NFT" || item.interface === "ProgrammableNFT"
+      )
+      .slice(0, 20)
+      .map((n: {
+        content?: { metadata?: { name?: string }; links?: { image?: string } };
+        grouping?: Array<{ group_value?: string }>;
+        id: string;
+      }) => ({
+        name: n.content?.metadata?.name || "Unknown NFT",
+        collection: n.grouping?.[0]?.group_value || "Unknown Collection",
+        image: n.content?.links?.image,
+        mint: n.id,
+      }));
 
-      nfts = items
-        .filter((item: { interface: string }) =>
-          item.interface === "V1_NFT" || item.interface === "ProgrammableNFT"
-        )
-        .slice(0, 20)
-        .map((n: {
-          content?: { metadata?: { name?: string }; links?: { image?: string } };
-          grouping?: Array<{ group_value?: string }>;
-          id: string;
-        }) => ({
-          name: n.content?.metadata?.name || "Unknown NFT",
-          collection: n.grouping?.[0]?.group_value || "Unknown Collection",
-          image: n.content?.links?.image,
-          mint: n.id,
-        }));
-    } catch (e) {
-      console.error("NFT fetch error:", e);
-    }
-
-    return { solBalance, tokens, nfts };
+    return { solBalance, tokens: filteredTokens, nfts };
   } catch (error) {
     console.error("Helius fetch error:", error);
     return { solBalance: 0, tokens: [], nfts: [] };
