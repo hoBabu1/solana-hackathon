@@ -124,8 +124,8 @@ export default function LearnPage() {
                   : "text-white/60 hover:text-white hover:bg-white/5"
               )}
             >
-              <HelpCircle className="w-4 h-4" />
-              Why encrypt?
+              <Shield className="w-4 h-4" />
+              Master Privacy
             </button>
           </div>
         </motion.div>
