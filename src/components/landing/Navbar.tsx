@@ -22,7 +22,6 @@ export function Navbar() {
           <Link href="/" className="flex items-center gap-2 group">
             <Eye className="w-8 h-8 text-[#00fff9] group-hover:text-[#b026ff] transition-colors" />
             <span className="text-xl font-bold gradient-text">WalletSpy</span>
-            <span className="text-xs text-[#00fff9]">.lol</span>
           </Link>
 
           {/* Desktop Navigation */}

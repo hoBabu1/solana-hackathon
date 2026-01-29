@@ -81,10 +81,6 @@ export default function LearnPage() {
             </div>
           </a>
 
-          <h1 className="text-3xl sm:text-4xl font-bold mb-4">
-            Hey, Let Me Show You Something 👋
-          </h1>
-
           <div className="max-w-2xl mx-auto mb-6 text-left">
             <Card className="border-[#b026ff]/30">
               <div className="p-5">
@@ -93,13 +89,13 @@ export default function LearnPage() {
                   Everyone can see your balance, your trades, your wins, your losses... <em>everything</em>.
                 </p>
                 <p className="text-white/80 mb-3">
-                  I built <a href="https://encrypt.trade" target="_blank" rel="noopener noreferrer" className="text-[#00fff9] font-bold hover:underline">encrypt.trade</a> to
-                  fix this. It&apos;s the first compliant privacy layer for Solana - wrap your tokens,
+                  That&apos;s where <a href="https://encrypt.trade" target="_blank" rel="noopener noreferrer" className="text-[#00fff9] font-bold hover:underline">encrypt.trade</a> comes in.
+                  It&apos;s the first compliant privacy layer for Solana - wrap your tokens,
                   trade privately, unwrap when you&apos;re done. Simple.
                 </p>
                 <p className="text-white/60 text-sm">
                   But first, let me teach you <em>why</em> you need this. Take these 5 lessons -
-                  I promise they&apos;re actually fun. Memes included. 🎭
+                  they&apos;re actually fun. Memes included. 🎭
                 </p>
               </div>
             </Card>

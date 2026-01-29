@@ -13,7 +13,6 @@ export function Footer() {
             <Link href="/" className="flex items-center gap-2 mb-4">
               <Eye className="w-6 h-6 text-[#00fff9]" />
               <span className="text-lg font-bold gradient-text">WalletSpy</span>
-              <span className="text-xs text-[#00fff9]">.lol</span>
             </Link>
             <p className="text-white/60 text-sm mb-4 max-w-md">
               A privacy awareness tool that helps you understand how exposed your Solana wallet really is.
@@ -21,20 +20,12 @@ export function Footer() {
             </p>
             <div className="flex gap-4">
               <a
-                href="https://twitter.com"
+                href="https://x.com/thedhanyosmi"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-white/40 hover:text-[#00fff9] transition-colors"
               >
                 <Twitter size={20} />
-              </a>
-              <a
-                href="https://github.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white/40 hover:text-[#00fff9] transition-colors"
-              >
-                <Github size={20} />
               </a>
             </div>
           </div>
@@ -89,7 +80,17 @@ export function Footer() {
         </div>
 
         <div className="mt-12 pt-8 border-t border-white/10 text-center text-sm text-white/40">
-          <p>Built for the Solana Privacy Hackathon 2024</p>
+          <p>
+            Built with 💜 by{" "}
+            <a
+              href="https://x.com/thedhanyosmi"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[#00fff9] hover:underline font-semibold"
+            >
+              Dhanyosmi
+            </a>
+          </p>
           <p className="mt-2">
             Remember: Your wallet is not a personality trait. Stop posting it. 🙃
           </p>

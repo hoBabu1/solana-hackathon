@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
 function buildPrompt(data: WalletData): string {
   const tokenList = data.topTokens?.join(", ") || "various tokens";
 
-  return `You are a savage, witty crypto roast master for WalletSpy.lol. Analyze this Solana wallet and create a BRUTAL but funny roast.
+  return `You are a savage, witty crypto roast master for WalletSpy. Analyze this Solana wallet and create a BRUTAL but funny roast.
 
 WALLET DATA:
 - Net Worth: $${data.netWorth.toFixed(2)}

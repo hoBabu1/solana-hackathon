@@ -65,8 +65,8 @@ export default function ScanPage() {
   const handleShare = () => {
     if (!analysis) return;
 
-    const text = `This wallet is ${analysis.surveillanceScore}% exposed on WalletSpy.lol 💀\n\nFind out how exposed YOUR wallet is:`;
-    const url = "https://walletspy.lol";
+    const text = `This wallet is ${analysis.surveillanceScore}% exposed on WalletSpy 💀\n\nFind out how exposed YOUR wallet is:`;
+    const url = "https://walletspy.xyz";
 
     if (navigator.share) {
       navigator.share({ title: "WalletSpy Score", text, url });
@@ -181,7 +181,7 @@ export default function ScanPage() {
                 variant="secondary"
                 className="bg-[#b026ff]/20 hover:bg-[#b026ff]/30 border-[#b026ff]/50"
               >
-                🎲 Scan Random Address
+                🎯 Scan Default Address
               </Button>
             </div>
           </Card>

@@ -16,17 +16,17 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "WalletSpy.lol - Your Wallet Is Being Watched",
+  title: "WalletSpy - Your Wallet Is Being Watched",
   description: "Find out how exposed your Solana wallet really is. Privacy awareness through education and dark humor.",
   keywords: ["solana", "privacy", "crypto", "wallet", "surveillance", "blockchain"],
   openGraph: {
-    title: "WalletSpy.lol - Your Wallet Is Being Watched",
+    title: "WalletSpy - Your Wallet Is Being Watched",
     description: "Find out how exposed your Solana wallet really is.",
     images: ["/og-image.png"],
   },
   twitter: {
     card: "summary_large_image",
-    title: "WalletSpy.lol",
+    title: "WalletSpy",
     description: "Your Solana wallet is being watched. Find out how exposed you are.",
   },
 };
