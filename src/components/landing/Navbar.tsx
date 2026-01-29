@@ -10,6 +10,7 @@ export function Navbar() {
 
   const navLinks = [
     { href: "/scan", label: "Scan" },
+    { href: "/compare", label: "Compare" },
     { href: "/learn", label: "Learn" },
     { href: "/leaderboard", label: "Leaderboard" },
   ];

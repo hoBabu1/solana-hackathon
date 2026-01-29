@@ -7,6 +7,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { formatUSD, shortenAddress } from "@/lib/utils";
 import { EncryptTradeCTA } from "./EncryptTradeCTA";
+import { TwitterExposure } from "./TwitterExposure";
+import { BeforeAfterSimulator } from "./BeforeAfterSimulator";
+import { ShareableReportCard } from "./ShareableReportCard";
 import {
   Wallet,
   AlertTriangle,
@@ -182,6 +185,12 @@ export function ScanResults({ analysis, onShare }: ScanResultsProps) {
           </CardContent>
         </Card>
       )}
+
+      {/* Twitter/X Exposure */}
+      <TwitterExposure walletAddress={analysis.address} />
+
+      {/* Before vs After Simulator */}
+      <BeforeAfterSimulator netWorth={analysis.netWorth} />
 
       {/* Accordion Sections */}
       <div className="space-y-3">
@@ -487,16 +496,53 @@ export function ScanResults({ analysis, onShare }: ScanResultsProps) {
                     mistake.severity === "high" ? "bg-orange-500" :
                     mistake.severity === "medium" ? "bg-yellow-500" : "bg-white/40"
                   }`} />
-                  <div>
-                    <p className="text-sm font-medium capitalize">{mistake.type.replace(/_/g, " ")}</p>
-                    <p className="text-xs text-white/50">{mistake.description}</p>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-medium capitalize">{mistake.type.replace(/_/g, " ")}</p>
+                      <span className={`text-[10px] px-2 py-0.5 rounded uppercase font-bold ${
+                        mistake.severity === "critical" ? "bg-[#ff0844]/20 text-[#ff0844]" :
+                        mistake.severity === "high" ? "bg-orange-500/20 text-orange-500" :
+                        mistake.severity === "medium" ? "bg-yellow-500/20 text-yellow-500" : "bg-white/20 text-white/50"
+                      }`}>
+                        {mistake.severity}
+                      </span>
+                    </div>
+                    <p className="text-xs text-white/50 mt-1">{mistake.description}</p>
                   </div>
                 </div>
               ))}
             </div>
+
+            {/* Fix All CTA */}
+            <div className="mt-4 p-4 bg-gradient-to-r from-[#b026ff]/20 to-[#00fff9]/20 rounded-lg border border-[#00fff9]/30">
+              <div className="flex items-center gap-3 mb-3">
+                <Shield className="w-6 h-6 text-[#00fff9]" />
+                <div>
+                  <p className="font-bold text-[#00fff9]">Fix all {analysis.privacyMistakes.length} issues with encrypt.trade</p>
+                  <p className="text-xs text-white/60">Wrap your tokens and trade privately. Break the surveillance chain.</p>
+                </div>
+              </div>
+              <a href="https://encrypt.trade" target="_blank" rel="noopener noreferrer" className="block">
+                <Button className="w-full bg-gradient-to-r from-[#b026ff] to-[#00fff9]">
+                  <Shield className="w-4 h-4" />
+                  Start Trading Privately
+                </Button>
+              </a>
+            </div>
           </AccordionSection>
         )}
       </div>
+
+      {/* Shareable Report Card */}
+      <ShareableReportCard
+        address={analysis.address}
+        surveillanceScore={analysis.surveillanceScore}
+        riskLevel={analysis.riskLevel}
+        personality={analysis.personality}
+        netWorth={analysis.netWorth}
+        totalTransactions={analysis.totalTransactions}
+        tokenCount={analysis.tokens?.length || 0}
+      />
 
       {/* Encrypt.trade CTA */}
       <EncryptTradeCTA
@@ -507,14 +553,10 @@ export function ScanResults({ analysis, onShare }: ScanResultsProps) {
 
       {/* Action Buttons */}
       <div className="flex gap-3">
-        <Button onClick={onShare} variant="secondary" className="flex-1">
-          <Share2 className="w-4 h-4" />
-          Share
-        </Button>
         <Link href="/learn" className="flex-1">
           <Button className="w-full">
             <Shield className="w-4 h-4" />
-            Learn More
+            Learn Privacy
           </Button>
         </Link>
       </div>
