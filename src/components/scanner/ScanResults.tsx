@@ -26,6 +26,8 @@ import {
   ChevronRight,
   TrendingUp,
   Zap,
+  Key,
+  ShieldAlert,
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -396,6 +398,76 @@ export function ScanResults({ analysis, onShare }: ScanResultsProps) {
             </div>
           </AccordionSection>
         )}
+
+        {/* Token Approvals */}
+        <AccordionSection
+          id="approvals"
+          title="Token Approvals"
+          icon={Key}
+          iconColor="text-orange-500"
+          badge={analysis.approvals?.length || 0}
+          defaultOpen={analysis.approvals && analysis.approvals.length > 0}
+        >
+          {analysis.approvals && analysis.approvals.length > 0 ? (
+            <div className="space-y-3">
+              <p className="text-xs text-white/50 mb-3">
+                Contracts you&apos;ve approved to spend your tokens. Review and revoke any you don&apos;t recognize.
+              </p>
+              {analysis.approvals.map((approval, i) => (
+                <div key={i} className="p-3 bg-white/5 rounded-lg border border-orange-500/20">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      {approval.tokenLogoUrl ? (
+                        <img src={approval.tokenLogoUrl} alt={approval.tokenSymbol} className="w-6 h-6 rounded-full" />
+                      ) : (
+                        <div className="w-6 h-6 rounded-full bg-orange-500/20 flex items-center justify-center text-[10px] font-bold">
+                          {approval.tokenSymbol?.slice(0, 2)}
+                        </div>
+                      )}
+                      <div>
+                        <p className="font-medium text-sm">{approval.tokenSymbol}</p>
+                        <p className="text-[10px] text-white/40">{approval.tokenName}</p>
+                      </div>
+                    </div>
+                    {approval.isUnlimited ? (
+                      <span className="px-2 py-0.5 text-[10px] bg-[#ff0844]/20 text-[#ff0844] rounded font-bold">
+                        UNLIMITED
+                      </span>
+                    ) : (
+                      <span className="text-sm text-orange-500 font-medium">
+                        {approval.approvedAmount.toLocaleString(undefined, { maximumFractionDigits: 4 })}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 text-xs">
+                    <ShieldAlert className="w-3 h-3 text-orange-500" />
+                    <span className="text-white/50">Approved to:</span>
+                    <span className="font-mono text-white/70">
+                      {approval.spenderLabel || shortenAddress(approval.spender, 6)}
+                    </span>
+                  </div>
+                  {approval.usdValue !== undefined && approval.usdValue > 0 && (
+                    <p className="text-xs text-orange-500/70 mt-1">
+                      At risk: {formatUSD(approval.usdValue)}
+                    </p>
+                  )}
+                </div>
+              ))}
+              <div className="mt-3 p-3 bg-orange-500/10 rounded-lg border border-orange-500/30">
+                <p className="text-xs text-orange-400">
+                  <AlertTriangle className="w-3 h-3 inline mr-1" />
+                  Unlimited approvals are risky! If a contract is exploited, all approved tokens can be drained.
+                </p>
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-4">
+              <Shield className="w-8 h-8 text-[#00ff9f] mx-auto mb-2" />
+              <p className="text-sm text-white/70">No active token approvals</p>
+              <p className="text-xs text-white/40 mt-1">Your wallet hasn&apos;t approved any contracts to spend tokens</p>
+            </div>
+          )}
+        </AccordionSection>
 
         {/* Privacy Concerns */}
         {analysis.privacyMistakes.length > 0 && (

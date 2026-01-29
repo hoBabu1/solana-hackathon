@@ -39,6 +39,7 @@ export interface WalletAnalysis {
   topInteractedAddresses: { address: string; count: number; label?: string }[];
   cexInteractions: number; // Number of interactions with centralized exchanges
   cexNames: string[]; // Names of CEXes detected
+  approvals: TokenApproval[]; // Token approvals (delegated spending permissions)
 }
 
 export interface TokenHolding {
@@ -112,4 +113,17 @@ export interface Achievement {
   icon: string;
   unlocked: boolean;
   unlockedAt?: number;
+}
+
+export interface TokenApproval {
+  tokenSymbol: string;
+  tokenName: string;
+  tokenMint: string;
+  tokenLogoUrl?: string;
+  spender: string;
+  spenderLabel?: string;
+  approvedAmount: number;
+  tokenDecimals: number;
+  isUnlimited: boolean;
+  usdValue?: number;
 }

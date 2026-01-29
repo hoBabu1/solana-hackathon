@@ -1,4 +1,4 @@
-import { WalletAnalysis, PrivacyMistake, Transaction, TokenHolding, NFTHolding } from "@/types";
+import { WalletAnalysis, PrivacyMistake, Transaction, TokenHolding, NFTHolding, TokenApproval } from "@/types";
 
 const HELIUS_API_KEY = process.env.NEXT_PUBLIC_HELIUS_API_KEY || "";
 const SOLSCAN_API_KEY = process.env.NEXT_PUBLIC_SOLSCAN_API_KEY || "";
@@ -170,6 +170,9 @@ export async function analyzeWallet(address: string): Promise<WalletAnalysis> {
     const nfts = balanceData.nfts || [];
     const solBalance = balanceData.solBalance;
 
+    // Fetch token approvals
+    const approvals = await fetchTokenApprovals(address, tokens);
+
     // Calculate real net worth
     const tokenValue = tokens.reduce((acc, t) => acc + (t.usdValue || 0), 0);
     const solValue = solBalance * solPrice;
@@ -287,6 +290,7 @@ export async function analyzeWallet(address: string): Promise<WalletAnalysis> {
       topInteractedAddresses: txAnalysis.topAddresses,
       cexInteractions: txAnalysis.cexInteractions,
       cexNames: txAnalysis.cexNames,
+      approvals,
     };
   } catch (error) {
     console.error("Error analyzing wallet:", error);
@@ -676,6 +680,86 @@ async function fetchFromHelius(address: string, solPrice: number): Promise<{
   } catch (error) {
     console.error("Helius fetch error:", error);
     return { solBalance: 0, tokens: [], nfts: [] };
+  }
+}
+
+// Fetch token approvals (delegates) for the wallet
+async function fetchTokenApprovals(address: string, tokens: TokenHolding[]): Promise<TokenApproval[]> {
+  if (!HELIUS_API_KEY) return [];
+
+  try {
+    console.log("Fetching token approvals for:", address);
+
+    // Use Helius RPC to get token accounts with program details
+    const response = await fetch(`https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: "walletspy-approvals",
+        method: "getTokenAccountsByOwner",
+        params: [
+          address,
+          { programId: "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA" },
+          { encoding: "jsonParsed" }
+        ]
+      }),
+    });
+
+    if (!response.ok) {
+      console.log("Token accounts fetch failed:", response.status);
+      return [];
+    }
+
+    const data = await response.json();
+    const tokenAccounts = data.result?.value || [];
+
+    console.log("Token accounts found:", tokenAccounts.length);
+
+    const approvals: TokenApproval[] = [];
+
+    for (const account of tokenAccounts) {
+      const parsed = account.account?.data?.parsed?.info;
+      if (!parsed) continue;
+
+      // Check if there's a delegate (approval)
+      if (parsed.delegate && parsed.delegatedAmount) {
+        const delegatedAmount = parsed.delegatedAmount?.uiAmount ||
+          Number(parsed.delegatedAmount?.amount || 0) / Math.pow(10, parsed.tokenAmount?.decimals || 9);
+
+        if (delegatedAmount > 0) {
+          const mint = parsed.mint;
+          const decimals = parsed.tokenAmount?.decimals || 9;
+
+          // Find token info from our tokens list
+          const tokenInfo = tokens.find(t => t.mint === mint);
+          const knownToken = KNOWN_TOKENS[mint];
+
+          // Check if approval is unlimited (very large amount)
+          const maxUint64 = 18446744073709551615;
+          const isUnlimited = Number(parsed.delegatedAmount?.amount || 0) > maxUint64 * 0.9;
+
+          approvals.push({
+            tokenSymbol: tokenInfo?.symbol || knownToken?.symbol || mint.slice(0, 6) + "...",
+            tokenName: tokenInfo?.name || knownToken?.name || "Unknown Token",
+            tokenMint: mint,
+            tokenLogoUrl: tokenInfo?.logoUrl,
+            spender: parsed.delegate,
+            spenderLabel: KNOWN_PROTOCOLS[parsed.delegate] || CEX_ADDRESSES[parsed.delegate],
+            approvedAmount: delegatedAmount,
+            tokenDecimals: decimals,
+            isUnlimited,
+            usdValue: tokenInfo ? delegatedAmount * (tokenInfo.usdValue / tokenInfo.amount) : undefined,
+          });
+        }
+      }
+    }
+
+    console.log("Token approvals found:", approvals.length);
+    return approvals;
+  } catch (error) {
+    console.error("Error fetching token approvals:", error);
+    return [];
   }
 }
 
@@ -1120,5 +1204,6 @@ function getMockAnalysis(address: string): WalletAnalysis {
     topInteractedAddresses: [],
     cexInteractions: 0,
     cexNames: [],
+    approvals: [],
   };
 }
