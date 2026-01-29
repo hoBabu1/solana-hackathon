@@ -164,18 +164,41 @@ export default function ScanPage() {
           </Card>
         </motion.div>
 
+        {/* Demo wallet - prominent CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="mt-6"
+        >
+          <Card className="border-[#b026ff]/30 bg-gradient-to-r from-[#b026ff]/10 to-[#00fff9]/10">
+            <div className="p-4 text-center">
+              <p className="text-sm text-white/60 mb-3">
+                Don&apos;t have a wallet? Try this one:
+              </p>
+              <Button
+                onClick={() => handleScan("APJGCFA8JkT4gapvRU4G76ugGXYkFAfdfFKDQDWdHVrs")}
+                variant="secondary"
+                className="bg-[#b026ff]/20 hover:bg-[#b026ff]/30 border-[#b026ff]/50"
+              >
+                🎲 Scan Random Address
+              </Button>
+            </div>
+          </Card>
+        </motion.div>
+
         {/* Example wallets */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
-          className="mt-8 text-center"
+          className="mt-6 text-center"
         >
-          <p className="text-sm text-white/40 mb-3">Try a famous wallet:</p>
+          <p className="text-sm text-white/40 mb-3">Or try a famous wallet:</p>
           <div className="flex flex-wrap justify-center gap-2">
             {[
               { name: "Toly", address: "toly.sol" },
-              { name: "Example", address: "7xKXtg2CW87d97TXJSDpbD5jBkheTqA83TZRuJosgAsU" },
+              { name: "Random Degen", address: "APJGCFA8JkT4gapvRU4G76ugGXYkFAfdfFKDQDWdHVrs" },
             ].map((example) => (
               <button
                 key={example.name}

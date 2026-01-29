@@ -146,42 +146,68 @@ function getRandomFallbackRoast(data: WalletData): string {
     roasts.push(
       `${data.memecoinCount} memecoins? Your portfolio looks like a crypto petting zoo that nobody visits anymore. 🐕`,
       `You've aped into so many memecoins, even Bonk is concerned about your financial decisions. 🦴`,
-      `Your wallet is ${data.degenScore}% degen. That's not a flex, that's a cry for help. 📞`
+      `Your wallet is ${data.degenScore}% degen. That's not a flex, that's a cry for help. 📞`,
+      `Your portfolio has more dogs than a shelter. At least shelters have adoption rates. 🐶`,
+      `${data.degenScore}% degen score? Your wallet needs therapy, not analysis. 🛋️`,
+      `You collect memecoins like they're Pokémon, except these ones only depreciate. Gotta lose 'em all! 💀`,
+      `Your wallet screams 'I make financial decisions at 3am after 4 beers'. Respect. 🍺`
     );
   }
 
   if (data.netWorth > 10000) {
     roasts.push(
       `$${data.netWorth.toFixed(0)} in a hot wallet? Hackers are literally sending each other your address as a birthday gift. 🎁`,
-      `You're basically a walking ATM machine on the blockchain. Nice flex though. 💰`
+      `You're basically a walking ATM machine on the blockchain. Nice flex though. 💰`,
+      `$${data.netWorth.toFixed(0)} sitting pretty and everyone can see it. Your wallet is the crypto equivalent of leaving your Lambo unlocked with the keys in it. 🔑`,
+      `With that net worth exposed, you're not a trader, you're a target. But hey, at least you're a rich target. 🎯`,
+      `Congrats on the bag! The 47 scammers watching your wallet also say congrats. 💋`
     );
   }
 
   if (data.totalTransactions < 10) {
     roasts.push(
       `${data.totalTransactions} transactions? Even your wallet is asking "are we there yet?" 🚗`,
-      `Your wallet has less activity than a ghost town. Did you buy high and just... give up? 👻`
+      `Your wallet has less activity than a ghost town. Did you buy high and just... give up? 👻`,
+      `${data.totalTransactions} transactions total? Your wallet is drier than your DMs. 📭`,
+      `This wallet has commitment issues. ${data.totalTransactions} transactions and then ghosted the blockchain. Classic. 👋`,
+      `Your wallet is playing hard to get with ${data.totalTransactions} transactions. The blockchain likes a tease. 😏`
     );
   }
 
   if (data.swapCount > 50) {
     roasts.push(
       `${data.swapCount} swaps? You're not trading, you're just donating fees to validators. 💸`,
-      `Jupiter should send you a thank you card for all those swap fees. You're basically their angel investor. 🪐`
+      `Jupiter should send you a thank you card for all those swap fees. You're basically their angel investor. 🪐`,
+      `${data.swapCount} swaps? You change tokens more often than your underwear. 🩲`,
+      `With ${data.swapCount} swaps, you're not a trader, you're a professional fee donor. Very philanthropic. 💝`,
+      `You swap more than you swipe right. And probably with similar success rates. 💔`
     );
   }
 
   if (data.nftCount > 10) {
     roasts.push(
-      `${data.nftCount} NFTs and probably none of them are worth the gas you paid. Modern art collector moment. 🖼️`
+      `${data.nftCount} NFTs and probably none of them are worth the gas you paid. Modern art collector moment. 🖼️`,
+      `${data.nftCount} NFTs? Your wallet is a museum of financial regret. Admission is free, just like these JPEGs soon. 🏛️`,
+      `Collecting ${data.nftCount} NFTs like you're trying to fill an emotional void. The void is winning. 🕳️`
     );
   }
 
+  // Dark and flirty generic roasts
   if (roasts.length === 0) {
     roasts.push(
       "Your wallet is so transparent, even your future mistakes are already on the blockchain. 🔮",
       "Every transaction you make is recorded forever. Your grandkids will see you bought BONK at the top. 📜",
-      "Privacy? Never heard of her. Your wallet is more exposed than a Vegas billboard. 🎰"
+      "Privacy? Never heard of her. Your wallet is more exposed than a Vegas billboard. 🎰",
+      "Your wallet just sent me nudes. It didn't have to, everything's already public anyway. 📸",
+      "I've seen your entire financial history. We're basically dating now. 💕",
+      "Your transactions tell a story. It's rated R for Rekt. 🎬",
+      "Your wallet has big 'texts you at 2am' energy. And not in a good way. 📱",
+      "The blockchain saw everything. EVERYTHING. It's blushing. 😳",
+      "Your portfolio is like your browser history - you really wish it was private. 🔍",
+      "Looking at your wallet feels illegal, but somehow it's completely public. Kinky. 😈",
+      "Your wallet has more red flags than my ex. And I can see ALL of them. 🚩",
+      "This wallet is giving 'makes impulsive decisions during Mercury retrograde' vibes. ♓",
+      "Your financial decisions are on a public ledger. Bold move for someone this bad at trading. 📊"
     );
   }
 
@@ -189,22 +215,185 @@ function getRandomFallbackRoast(data: WalletData): string {
 }
 
 function getBasicPersonality(data: WalletData): string {
-  if (data.degenScore > 80) return "The Memecoin Maniac";
-  if (data.degenScore > 60) return "Certified Degen";
-  if (data.netWorth > 50000) return "The Whale Watcher";
-  if (data.netWorth > 10000) return "The Bag Holder";
-  if (data.swapCount > 100) return "The Swap Addict";
-  if (data.nftCount > 20) return "NFT Hoarder";
-  if (data.totalTransactions < 10) return "The Ghost";
-  if (data.totalTransactions > 200) return "The Hyperactive Trader";
-  return "The Average Joe";
+  // High degen scores - chaotic energy
+  if (data.degenScore > 80) {
+    const degenPersonalities = [
+      "The Memecoin Maniac",
+      "Professional Dumpster Diver",
+      "The 3AM Ape Artist",
+      "Chaos Wallet Daddy",
+      "The Rugpull Magnet",
+      "Degen Lord Supreme",
+    ];
+    return degenPersonalities[Math.floor(Math.random() * degenPersonalities.length)];
+  }
+  if (data.degenScore > 60) {
+    const midDegenPersonalities = [
+      "Certified Degen",
+      "The FOMO Victim",
+      "Hopium Addict",
+      "The Copium Dealer",
+      "Part-Time Gambler",
+    ];
+    return midDegenPersonalities[Math.floor(Math.random() * midDegenPersonalities.length)];
+  }
+
+  // Whale territory - flex but risky
+  if (data.netWorth > 50000) {
+    const whalePersonalities = [
+      "The Whale Watcher",
+      "Big Bag Energy",
+      "The Walking Target",
+      "Hacker's Wet Dream",
+      "Main Character Energy",
+    ];
+    return whalePersonalities[Math.floor(Math.random() * whalePersonalities.length)];
+  }
+  if (data.netWorth > 10000) {
+    const midWhalePersonalities = [
+      "The Bag Holder",
+      "Medium Rare Whale",
+      "The Almost Rich",
+      "Trust Fund Tease",
+    ];
+    return midWhalePersonalities[Math.floor(Math.random() * midWhalePersonalities.length)];
+  }
+
+  // High activity - trading addiction
+  if (data.swapCount > 100) {
+    const swapPersonalities = [
+      "The Swap Addict",
+      "Fee Donation King",
+      "The Indecisive Trader",
+      "Commitment Issues",
+      "The Token Hoe",
+    ];
+    return swapPersonalities[Math.floor(Math.random() * swapPersonalities.length)];
+  }
+
+  // NFT collectors
+  if (data.nftCount > 20) {
+    const nftPersonalities = [
+      "NFT Hoarder",
+      "JPEG Therapist",
+      "Right-Click Victim",
+      "Art Daddy",
+      "The Floor Sweeper",
+    ];
+    return nftPersonalities[Math.floor(Math.random() * nftPersonalities.length)];
+  }
+
+  // Low activity - ghost mode
+  if (data.totalTransactions < 10) {
+    const ghostPersonalities = [
+      "The Ghost",
+      "The Commitment-Phobe",
+      "One Night Stand Wallet",
+      "The Tease",
+      "Cold Wallet Cold Heart",
+    ];
+    return ghostPersonalities[Math.floor(Math.random() * ghostPersonalities.length)];
+  }
+
+  // Hyperactive trading
+  if (data.totalTransactions > 200) {
+    const hyperPersonalities = [
+      "The Hyperactive Trader",
+      "Keyboard Warrior",
+      "The Overthinker",
+      "No Sleep Gang",
+      "Chart Stalker Supreme",
+    ];
+    return hyperPersonalities[Math.floor(Math.random() * hyperPersonalities.length)];
+  }
+
+  // Default personalities with flavor
+  const defaultPersonalities = [
+    "The Average Joe",
+    "Vanilla Trader",
+    "The Normie",
+    "Basic But Exposed",
+    "The Wallflower",
+    "Crypto Curious",
+  ];
+  return defaultPersonalities[Math.floor(Math.random() * defaultPersonalities.length)];
 }
 
 function getBasicVerdict(data: WalletData): string {
-  if (data.degenScore > 80) return "Professional exit liquidity provider 💀";
-  if (data.netWorth > 50000) return "Actually winning (for now)";
-  if (data.memecoinCount > 10) return "Certified bag holder since 2024";
-  if (data.totalTransactions < 5) return "Did you forget your seed phrase?";
-  if (data.swapCount > 50) return "Jupiter's favorite customer";
-  return "Standard blockchain citizen";
+  // High degen - savage verdicts
+  if (data.degenScore > 80) {
+    const degenVerdicts = [
+      "Professional exit liquidity provider 💀",
+      "Down bad and proud of it 📉",
+      "Your portfolio is a crime scene 🔪",
+      "Financial Darwin Award nominee 🏆",
+      "Therapist needed, not financial advice 🛋️",
+      "Born to lose, forced to cope 😭",
+      "Your wallet belongs on WikiLeaks 📰",
+    ];
+    return degenVerdicts[Math.floor(Math.random() * degenVerdicts.length)];
+  }
+
+  // Whale verdicts - flex but warning
+  if (data.netWorth > 50000) {
+    const whaleVerdicts = [
+      "Actually winning (for now)",
+      "Rich but reckless, our favorite combo 💋",
+      "Hackers have entered the chat 👀",
+      "Your DMs are about to get interesting 📩",
+      "Big wallet energy, small privacy energy ⚡",
+      "Flexing with your guard down 🤑",
+    ];
+    return whaleVerdicts[Math.floor(Math.random() * whaleVerdicts.length)];
+  }
+
+  // Memecoin bag holders
+  if (data.memecoinCount > 10) {
+    const memeVerdicts = [
+      "Certified bag holder since 2024",
+      "Collecting Ls like Pokémon 🎴",
+      "Your portfolio is a meme itself 🤡",
+      "Diamond hands or just stuck? 💎",
+      "HODL is not a personality trait 😬",
+      "Down astronomically, up spiritually ✨",
+    ];
+    return memeVerdicts[Math.floor(Math.random() * memeVerdicts.length)];
+  }
+
+  // Inactive wallets
+  if (data.totalTransactions < 5) {
+    const inactiveVerdicts = [
+      "Did you forget your seed phrase?",
+      "Playing hard to get with the blockchain 😏",
+      "Commitment issues detected 💔",
+      "Your wallet has trust issues 🚩",
+      "More ghosting than a haunted house 👻",
+      "One-night stand wallet vibes 🌙",
+    ];
+    return inactiveVerdicts[Math.floor(Math.random() * inactiveVerdicts.length)];
+  }
+
+  // High swap count
+  if (data.swapCount > 50) {
+    const swapVerdicts = [
+      "Jupiter's favorite customer",
+      "Paying rent to validators 🏠",
+      "Addicted to the swap button 🔄",
+      "Your fees could buy a car 🚗",
+      "Indecisive king/queen 👑",
+      "Professional fee burner 🔥",
+    ];
+    return swapVerdicts[Math.floor(Math.random() * swapVerdicts.length)];
+  }
+
+  // Default verdicts with attitude
+  const defaultVerdicts = [
+    "Standard blockchain citizen",
+    "Surprisingly normal, disturbingly exposed 😐",
+    "Average but still naked on-chain 🫣",
+    "Basic trader, premium surveillance 📡",
+    "Nothing special, everything visible 👁️",
+    "Normie but make it transparent 🪟",
+  ];
+  return defaultVerdicts[Math.floor(Math.random() * defaultVerdicts.length)];
 }

@@ -1142,9 +1142,24 @@ function calculateWalletAge(firstActivity: number): string {
   const days = Math.floor(diff / 86400);
 
   if (days < 1) return "Less than a day";
-  if (days < 30) return `${days} days`;
-  if (days < 365) return `${Math.floor(days / 30)} months`;
-  return `${(days / 365).toFixed(1)} years`;
+  if (days === 1) return "1 day";
+  if (days < 7) return `${days} days`;
+  if (days < 30) {
+    const weeks = Math.floor(days / 7);
+    return weeks === 1 ? "1 week" : `${weeks} weeks`;
+  }
+  if (days < 365) {
+    const months = Math.floor(days / 30);
+    return months === 1 ? "1 month" : `${months} months`;
+  }
+  const years = days / 365;
+  if (years < 2) {
+    const wholeYears = Math.floor(years);
+    const remainingMonths = Math.floor((days % 365) / 30);
+    if (remainingMonths === 0) return wholeYears === 1 ? "1 year" : `${wholeYears} years`;
+    return `1 year ${remainingMonths} ${remainingMonths === 1 ? "month" : "months"}`;
+  }
+  return `${years.toFixed(1)} years`;
 }
 
 function determineActivityPattern(transactions: { timestamp: number }[]): string {
