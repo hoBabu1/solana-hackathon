@@ -278,20 +278,5 @@ This is a hackathon project, but contributions are welcome!
 - [Solana Foundation](https://solana.org/) — Blockchain platform
 - [encrypt.trade](https://encrypt.trade/) — Privacy solutions partner
 
----
 
-## License
-
-MIT License — See [LICENSE](LICENSE) for details.
-
----
-
-## Disclaimer
-
-WalletSpy.lol is an educational tool designed to raise awareness about blockchain privacy. It does not store wallet data or track users. The "roasts" are AI-generated for entertainment and should not be taken as financial advice.
-
-**Your blockchain activity is public. Now you know exactly how public.**
-
----
-
-Built with paranoia and dark humor for the Encrypt Hackathon — **Track 1: Educate users about mass financial surveillance**
+Built with paranoia and dark humor for the Encrypt Hackathon 
