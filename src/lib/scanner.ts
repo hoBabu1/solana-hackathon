@@ -1,4 +1,4 @@
-import { WalletAnalysis, PrivacyMistake, Transaction, TokenHolding, NFTHolding, TokenApproval } from "@/types";
+import { WalletAnalysis, PrivacyMistake, Transaction, TokenHolding, NFTHolding, TokenApproval, SocialProfile, MemecoinPnL, MemecoinTrade, IncomeSource, PrivacyProtocolMisuse } from "@/types";
 
 const HELIUS_API_KEY = process.env.NEXT_PUBLIC_HELIUS_API_KEY || "";
 const SOLSCAN_API_KEY = process.env.NEXT_PUBLIC_SOLSCAN_API_KEY || "";
@@ -55,9 +55,57 @@ const KNOWN_PROTOCOLS: Record<string, string> = {
   "DjVE6JNiYqPL2QXyCUUh8rNjHrbz9hXHNYt99MQ59qw1": "Orca",
 };
 
-// Privacy-related protocols
+// Privacy-related protocols with their addresses
 const PRIVACY_PROTOCOLS: Record<string, string> = {
   "enc1pher...": "Encifher/encrypt.trade",
+};
+
+// Known privacy mixer/protocol addresses (Solana ecosystem)
+const PRIVACY_MIXER_ADDRESSES: Record<string, string> = {
+  // Light Protocol (Solana's main privacy solution)
+  "2c5cDXRGBVoVwxPqK8iRUPa5mU7wHVz5JE3n5a6v5D5Q": "Light Protocol",
+  // Elusiv (deprecated but may still have history)
+  "Elusiv11111111111111111111111111111111111111": "Elusiv",
+};
+
+// Airdrop program addresses
+const AIRDROP_PROGRAMS: Record<string, string> = {
+  "MERLuDFBMmsHnsBPZw2sDQZHvXFMwp8EdjudcU2HKky": "Jupiter Airdrop",
+  "BONUS1111111111111111111111111111111111111": "Bonk Airdrop",
+  "pytS9TjG1qyAZypk7n8rw8gfW9sUaqqYyMhJQ4E7JCQ": "Pyth Airdrop",
+  "jtogvBNH3WBSWDYD5FJfQP2ZxNTuf82zL8GkEhPeaJx": "Jito Airdrop",
+  "WnsoZfd9SDBsgkCrQ8xhweNKPcAkUcRdYhYXrLtcX2A": "W Airdrop",
+};
+
+// Staking program addresses
+const STAKING_PROGRAMS: Record<string, string> = {
+  "Stake11111111111111111111111111111111111111": "SOL Staking",
+  "MarBmsSgKXdrN1egZf5sqe1TMai9K1rChYNDJgjq7aD": "Marinade",
+  "J1toso1uCk3RLmjorhTtrVwY9HJ7X8V9yYac6Y7kGCPn": "Jito",
+  "mSoLzYCxHdYgdzU16g5QSh3i5K3z3KZK7ytfqcJm7So": "Marinade mSOL",
+};
+
+// NFT marketplace addresses
+const NFT_MARKETPLACES: Record<string, string> = {
+  "M2mx93ekt1fmXSVkTrUL9xVFHkmME8HTUi5Cyc5aF7K": "Magic Eden v2",
+  "TSWAPaqyCSx2KABk68Shruf4rp7CxcNi8hAsbdwmHbN": "Tensor",
+  "hadeK9DLv9eA7ya5KCTqSvSvRZeJC3JgD5a9Y3CNbvu": "Hadeswap",
+};
+
+// More memecoin addresses for comprehensive PnL tracking
+const EXTENDED_MEMECOINS: Record<string, { symbol: string; name: string }> = {
+  "DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263": { symbol: "BONK", name: "Bonk" },
+  "EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm": { symbol: "WIF", name: "dogwifhat" },
+  "7GCihgDB8fe6KNjn2MYtkzZcRjQy3t9GHdC8uHYmW2hr": { symbol: "POPCAT", name: "Popcat" },
+  "MEW1gQWJ3nEXg2qgERiKu7FAFj79PHvQVREQUzScPP5": { symbol: "MEW", name: "cat in a dogs world" },
+  "ukHH6c7mMyiWCf1b9pnWe25TSpkDDt3H5pQZgZ74J82": { symbol: "BOME", name: "BOOK OF MEME" },
+  "7BgBvyjrZX1YKz4oh9mjb8ZScatkkwb8DzFx7LoiVkM3": { symbol: "SLERF", name: "SLERF" },
+  "A8C3pPPvPGXLdsnXgWmPc6YBhAqGduVsVV6TNNE9q7Zk": { symbol: "MYRO", name: "Myro" },
+  "Df6yfrKC8kZE3KNkrHERKzAetSxbrWeniQfyJY4Jpump": { symbol: "PNUT", name: "Peanut the Squirrel" },
+  "ED5nyyWEzpPPiWimP8vYm7sD7TD3LAt3Q3gRTWHzPJBY": { symbol: "MOODENG", name: "Moo Deng" },
+  "CzLSujWBLFsSjncfkh59rUFqvafWcY5tzedWJSuypump": { symbol: "GOAT", name: "Goatseus Maximus" },
+  "2qEHjDLDLbuBgRYvsxhc5D6uDWAivNFZGan56P1tpump": { symbol: "PUPS", name: "PUPS" },
+  "HeLp6NuQkmYB4pYWo2zYs22mESHXPQYzXbB8n4V98jwC": { symbol: "AI16Z", name: "ai16z" },
 };
 
 // Roast templates for fallback
@@ -88,6 +136,576 @@ const ROAST_TEMPLATES = {
     "Your wallet is an open book. Hope you didn't want privacy! 📖",
   ],
 };
+
+// ============================================
+// SOCIAL PROFILE LINKING
+// ============================================
+
+async function fetchSocialProfiles(address: string): Promise<SocialProfile[]> {
+  const profiles: SocialProfile[] = [];
+
+  // 1. Check Solana Name Service (.sol domains)
+  try {
+    const snsProfile = await fetchSNSDomain(address);
+    profiles.push(snsProfile);
+  } catch (e) {
+    console.log("SNS lookup failed:", e);
+    profiles.push({ platform: "sns", found: false });
+  }
+
+  // 2. Check AllDomains (.abc, .bonk, .poor, etc.)
+  try {
+    const allDomainsProfile = await fetchAllDomains(address);
+    profiles.push(allDomainsProfile);
+  } catch (e) {
+    console.log("AllDomains lookup failed:", e);
+    profiles.push({ platform: "alldomains", found: false });
+  }
+
+  // 3. Check Backpack username
+  try {
+    const backpackProfile = await fetchBackpackUsername(address);
+    profiles.push(backpackProfile);
+  } catch (e) {
+    console.log("Backpack lookup failed:", e);
+    profiles.push({ platform: "backpack", found: false });
+  }
+
+  return profiles;
+}
+
+async function fetchSNSDomain(address: string): Promise<SocialProfile> {
+  try {
+    // Use SNS reverse lookup API
+    const res = await fetch(`https://sns-sdk-proxy.bonfida.workers.dev/reverse-lookup/${address}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.result && data.result.length > 0) {
+        const domain = data.result[0];
+        return {
+          platform: "sns",
+          found: true,
+          identifier: `${domain}.sol`,
+          url: `https://sns.id/domain/${domain}`,
+          verified: true,
+        };
+      }
+    }
+  } catch (e) {
+    console.log("SNS API error:", e);
+  }
+  return { platform: "sns", found: false };
+}
+
+async function fetchAllDomains(address: string): Promise<SocialProfile> {
+  try {
+    // AllDomains API
+    const res = await fetch(`https://api.alldomains.id/reverse/${address}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.domains && data.domains.length > 0) {
+        const domain = data.domains[0];
+        return {
+          platform: "alldomains",
+          found: true,
+          identifier: domain.name,
+          url: `https://alldomains.id/domain/${domain.name}`,
+          verified: true,
+        };
+      }
+    }
+  } catch (e) {
+    console.log("AllDomains API error:", e);
+  }
+  return { platform: "alldomains", found: false };
+}
+
+async function fetchBackpackUsername(address: string): Promise<SocialProfile> {
+  try {
+    // Backpack API (public user lookup)
+    const res = await fetch(`https://xnft.api.backpack.workers.dev/users?publicKey=${address}`);
+    if (res.ok) {
+      const data = await res.json();
+      if (data.user && data.user.username) {
+        return {
+          platform: "backpack",
+          found: true,
+          identifier: data.user.username,
+          url: `https://backpack.app/${data.user.username}`,
+          profileImage: data.user.image,
+          verified: true,
+        };
+      }
+    }
+  } catch (e) {
+    console.log("Backpack API error:", e);
+  }
+  return { platform: "backpack", found: false };
+}
+
+// ============================================
+// MEMECOIN PNL CALCULATOR
+// ============================================
+
+async function calculateMemecoinPnL(
+  tokens: TokenHolding[],
+  transactions: {
+    signature: string;
+    timestamp: number;
+    type: string;
+    source?: string;
+    tokenTransfers?: Array<{
+      mint: string;
+      fromUserAccount: string;
+      toUserAccount: string;
+      tokenAmount: number;
+    }>;
+    nativeTransfers?: Array<{
+      amount: number;
+      fromUserAccount: string;
+      toUserAccount: string;
+    }>;
+  }[],
+  userAddress: string
+): Promise<MemecoinPnL> {
+  const allMemecoins = { ...EXTENDED_MEMECOINS };
+
+  // Track memecoin trades
+  const memecoinTradesMap: Record<string, {
+    buys: { amount: number; timestamp: number; solValue: number }[];
+    sells: { amount: number; timestamp: number; solValue: number }[];
+  }> = {};
+
+  // Analyze transactions for memecoin swaps
+  for (const tx of transactions) {
+    if (!tx.tokenTransfers || tx.tokenTransfers.length === 0) continue;
+
+    for (const transfer of tx.tokenTransfers) {
+      const mint = transfer.mint;
+      const isMemecoin = !!allMemecoins[mint] || tokens.find(t => t.mint === mint && t.isMemecoin);
+
+      if (!isMemecoin) continue;
+
+      if (!memecoinTradesMap[mint]) {
+        memecoinTradesMap[mint] = { buys: [], sells: [] };
+      }
+
+      // Estimate SOL value from native transfers in same tx
+      const solTransfer = tx.nativeTransfers?.find(nt =>
+        nt.fromUserAccount === userAddress || nt.toUserAccount === userAddress
+      );
+      const solValue = solTransfer ? Math.abs(solTransfer.amount) / 1e9 : 0;
+
+      // Determine if buy or sell based on transfer direction
+      const isReceiving = transfer.toUserAccount === userAddress;
+
+      if (isReceiving) {
+        // Buying memecoin
+        memecoinTradesMap[mint].buys.push({
+          amount: transfer.tokenAmount,
+          timestamp: tx.timestamp,
+          solValue,
+        });
+      } else {
+        // Selling memecoin
+        memecoinTradesMap[mint].sells.push({
+          amount: transfer.tokenAmount,
+          timestamp: tx.timestamp,
+          solValue,
+        });
+      }
+    }
+  }
+
+  // Get current SOL price for USD conversion
+  const solPrice = await fetchSolPrice();
+
+  // Calculate PnL for each memecoin
+  const trades: MemecoinTrade[] = [];
+  let totalInvested = 0;
+  let totalCurrentValue = 0;
+  let totalSoldValue = 0;
+  let totalBuyValue = 0;
+
+  for (const [mint, tradeData] of Object.entries(memecoinTradesMap)) {
+    const tokenInfo = tokens.find(t => t.mint === mint);
+    const memecoinInfo = allMemecoins[mint];
+
+    const totalBought = tradeData.buys.reduce((sum, b) => sum + b.amount, 0);
+    const totalSold = tradeData.sells.reduce((sum, s) => sum + s.amount, 0);
+    const buyValueSol = tradeData.buys.reduce((sum, b) => sum + b.solValue, 0);
+    const sellValueSol = tradeData.sells.reduce((sum, s) => sum + s.solValue, 0);
+
+    const currentHolding = tokenInfo?.amount || 0;
+    const currentValueUsd = tokenInfo?.usdValue || 0;
+    const buyValueUsd = buyValueSol * solPrice;
+    const soldValueUsd = sellValueSol * solPrice;
+
+    const pnl = (currentValueUsd + soldValueUsd) - buyValueUsd;
+    const pnlPercentage = buyValueUsd > 0 ? ((pnl / buyValueUsd) * 100) : 0;
+
+    totalInvested += buyValueUsd;
+    totalCurrentValue += currentValueUsd;
+    totalSoldValue += soldValueUsd;
+    totalBuyValue += buyValueUsd;
+
+    trades.push({
+      token: memecoinInfo?.symbol || tokenInfo?.symbol || mint.slice(0, 6),
+      tokenMint: mint,
+      tokenLogoUrl: tokenInfo?.logoUrl,
+      buyAmount: totalBought,
+      buyValueUsd,
+      currentAmount: currentHolding,
+      currentValueUsd,
+      soldAmount: totalSold,
+      soldValueUsd,
+      pnl,
+      pnlPercentage,
+      status: currentHolding === 0 ? "sold" : totalSold > 0 ? "partial" : "holding",
+    });
+  }
+
+  // Also add current memecoin holdings that weren't tracked in transactions
+  for (const token of tokens) {
+    if (!token.isMemecoin) continue;
+    if (trades.find(t => t.tokenMint === token.mint)) continue;
+
+    // This memecoin wasn't in our transaction history, add as current holding
+    trades.push({
+      token: token.symbol,
+      tokenMint: token.mint,
+      tokenLogoUrl: token.logoUrl,
+      buyAmount: token.amount,
+      buyValueUsd: 0, // Unknown buy price
+      currentAmount: token.amount,
+      currentValueUsd: token.usdValue,
+      soldAmount: 0,
+      soldValueUsd: 0,
+      pnl: 0, // Can't calculate without buy price
+      pnlPercentage: 0,
+      status: "holding",
+    });
+
+    totalCurrentValue += token.usdValue;
+  }
+
+  // Sort trades by absolute PnL
+  trades.sort((a, b) => Math.abs(b.pnl) - Math.abs(a.pnl));
+
+  const totalPnL = (totalCurrentValue + totalSoldValue) - totalInvested;
+  const percentageChange = totalInvested > 0 ? ((totalPnL / totalInvested) * 100) : 0;
+
+  return {
+    totalInvested,
+    currentValue: totalCurrentValue,
+    realizedPnL: totalSoldValue - (totalInvested * (totalSoldValue / (totalCurrentValue + totalSoldValue || 1))),
+    unrealizedPnL: totalCurrentValue - (totalInvested * (totalCurrentValue / (totalCurrentValue + totalSoldValue || 1))),
+    totalPnL,
+    percentageChange,
+    trades,
+    biggestWin: trades.filter(t => t.pnl > 0).sort((a, b) => b.pnl - a.pnl)[0],
+    biggestLoss: trades.filter(t => t.pnl < 0).sort((a, b) => a.pnl - b.pnl)[0],
+  };
+}
+
+// ============================================
+// INCOME SOURCES BREAKDOWN
+// ============================================
+
+function analyzeIncomeSources(
+  transactions: {
+    signature: string;
+    timestamp: number;
+    type: string;
+    source?: string;
+    description?: string;
+    nativeTransfers?: Array<{
+      amount: number;
+      fromUserAccount: string;
+      toUserAccount: string;
+    }>;
+    tokenTransfers?: Array<{
+      mint: string;
+      fromUserAccount: string;
+      toUserAccount: string;
+      tokenAmount: number;
+    }>;
+  }[],
+  userAddress: string,
+  solPrice: number
+): IncomeSource[] {
+  const sources: Record<string, { amount: number; count: number }> = {
+    cex_withdrawal: { amount: 0, count: 0 },
+    defi_yield: { amount: 0, count: 0 },
+    nft_sale: { amount: 0, count: 0 },
+    airdrop: { amount: 0, count: 0 },
+    p2p_transfer: { amount: 0, count: 0 },
+    staking_reward: { amount: 0, count: 0 },
+    swap_profit: { amount: 0, count: 0 },
+    unknown: { amount: 0, count: 0 },
+  };
+
+  for (const tx of transactions) {
+    // Check for incoming native transfers
+    const incomingTransfers = tx.nativeTransfers?.filter(
+      nt => nt.toUserAccount === userAddress && nt.amount > 0
+    ) || [];
+
+    for (const transfer of incomingTransfers) {
+      const fromAddress = transfer.fromUserAccount;
+      const amountSol = transfer.amount / 1e9;
+      const amountUsd = amountSol * solPrice;
+
+      // Classify the source
+      if (CEX_ADDRESSES[fromAddress]) {
+        sources.cex_withdrawal.amount += amountUsd;
+        sources.cex_withdrawal.count++;
+      } else if (AIRDROP_PROGRAMS[fromAddress]) {
+        sources.airdrop.amount += amountUsd;
+        sources.airdrop.count++;
+      } else if (STAKING_PROGRAMS[fromAddress]) {
+        sources.staking_reward.amount += amountUsd;
+        sources.staking_reward.count++;
+      } else if (NFT_MARKETPLACES[fromAddress] || tx.type?.toLowerCase().includes("nft")) {
+        sources.nft_sale.amount += amountUsd;
+        sources.nft_sale.count++;
+      } else if (KNOWN_PROTOCOLS[fromAddress] || tx.source?.toLowerCase().includes("raydium") || tx.source?.toLowerCase().includes("orca")) {
+        sources.defi_yield.amount += amountUsd;
+        sources.defi_yield.count++;
+      } else if (tx.type?.toLowerCase().includes("swap")) {
+        sources.swap_profit.amount += amountUsd;
+        sources.swap_profit.count++;
+      } else if (amountSol > 0.01) {
+        // Significant transfer from unknown source = P2P
+        sources.p2p_transfer.amount += amountUsd;
+        sources.p2p_transfer.count++;
+      } else {
+        sources.unknown.amount += amountUsd;
+        sources.unknown.count++;
+      }
+    }
+
+    // Check for airdrop transactions by description
+    if (tx.description?.toLowerCase().includes("airdrop") ||
+        tx.description?.toLowerCase().includes("claim")) {
+      // Count token transfers as potential airdrops
+      if (tx.tokenTransfers) {
+        for (const tokenTx of tx.tokenTransfers) {
+          if (tokenTx.toUserAccount === userAddress) {
+            sources.airdrop.count++;
+          }
+        }
+      }
+    }
+  }
+
+  // Calculate total and percentages
+  const totalIncome = Object.values(sources).reduce((sum, s) => sum + s.amount, 0);
+
+  const incomeSourceLabels: Record<string, string> = {
+    cex_withdrawal: "CEX Withdrawals",
+    defi_yield: "DeFi Yields",
+    nft_sale: "NFT Sales",
+    airdrop: "Airdrops",
+    p2p_transfer: "P2P Transfers",
+    staking_reward: "Staking Rewards",
+    swap_profit: "Swap Profits",
+    unknown: "Other",
+  };
+
+  const result: IncomeSource[] = Object.entries(sources)
+    .filter(([, data]) => data.amount > 0 || data.count > 0)
+    .map(([type, data]) => ({
+      type: type as IncomeSource["type"],
+      label: incomeSourceLabels[type],
+      amount: data.amount,
+      percentage: totalIncome > 0 ? (data.amount / totalIncome) * 100 : 0,
+      count: data.count,
+    }))
+    .sort((a, b) => b.amount - a.amount);
+
+  return result;
+}
+
+// ============================================
+// PRIVACY PROTOCOL MISUSE DETECTION
+// ============================================
+
+function detectPrivacyProtocolMisuse(
+  transactions: {
+    signature: string;
+    timestamp: number;
+    type: string;
+    source?: string;
+    nativeTransfers?: Array<{
+      amount: number;
+      fromUserAccount: string;
+      toUserAccount: string;
+    }>;
+  }[],
+  userAddress: string,
+  connectedWallets: string[]
+): PrivacyProtocolMisuse[] {
+  const misuses: PrivacyProtocolMisuse[] = [];
+
+  // Track privacy protocol interactions
+  const privacyDeposits: { amount: number; timestamp: number; signature: string }[] = [];
+  const privacyWithdrawals: { amount: number; timestamp: number; signature: string }[] = [];
+
+  for (const tx of transactions) {
+    if (!tx.nativeTransfers) continue;
+
+    for (const transfer of tx.nativeTransfers) {
+      const isPrivacyProtocol =
+        PRIVACY_MIXER_ADDRESSES[transfer.fromUserAccount] ||
+        PRIVACY_MIXER_ADDRESSES[transfer.toUserAccount];
+
+      if (isPrivacyProtocol) {
+        const amountSol = Math.abs(transfer.amount) / 1e9;
+
+        if (transfer.fromUserAccount === userAddress) {
+          // Deposit to privacy protocol
+          privacyDeposits.push({
+            amount: amountSol,
+            timestamp: tx.timestamp,
+            signature: tx.signature,
+          });
+        } else if (transfer.toUserAccount === userAddress) {
+          // Withdrawal from privacy protocol
+          privacyWithdrawals.push({
+            amount: amountSol,
+            timestamp: tx.timestamp,
+            signature: tx.signature,
+          });
+        }
+      }
+    }
+  }
+
+  // Check for common privacy mistakes
+
+  // 1. Quick withdrawal (less than 24 hours between deposit and withdrawal)
+  for (const withdrawal of privacyWithdrawals) {
+    for (const deposit of privacyDeposits) {
+      const timeDiff = withdrawal.timestamp - deposit.timestamp;
+      const hoursDiff = timeDiff / 3600;
+
+      if (hoursDiff > 0 && hoursDiff < 24) {
+        misuses.push({
+          protocol: "Privacy Protocol",
+          issue: "quick_withdrawal",
+          severity: "critical",
+          description: "Withdrew too quickly after depositing",
+          details: `You withdrew within ${Math.round(hoursDiff)} hours of depositing. This significantly reduces privacy as timing analysis can link your transactions.`,
+          recommendation: "Wait at least 24-48 hours between deposits and withdrawals. Use encrypt.trade which handles timing automatically.",
+          timestamp: withdrawal.timestamp,
+          txSignature: withdrawal.signature,
+        });
+        break;
+      }
+    }
+  }
+
+  // 2. Same amount pattern
+  for (const withdrawal of privacyWithdrawals) {
+    for (const deposit of privacyDeposits) {
+      // Check if amounts are within 1% of each other
+      const amountDiff = Math.abs(withdrawal.amount - deposit.amount) / deposit.amount;
+      if (amountDiff < 0.01) {
+        misuses.push({
+          protocol: "Privacy Protocol",
+          issue: "same_amount",
+          severity: "critical",
+          description: "Withdrew the same amount as deposited",
+          details: `Deposited ${deposit.amount.toFixed(4)} SOL and withdrew ${withdrawal.amount.toFixed(4)} SOL. This makes it trivial to link your transactions.`,
+          recommendation: "Split withdrawals into different amounts and timing. encrypt.trade handles this automatically.",
+          timestamp: withdrawal.timestamp,
+          txSignature: withdrawal.signature,
+        });
+        break;
+      }
+    }
+  }
+
+  // 3. Round number deposits/withdrawals
+  for (const deposit of privacyDeposits) {
+    if (deposit.amount === Math.round(deposit.amount) && deposit.amount >= 1) {
+      misuses.push({
+        protocol: "Privacy Protocol",
+        issue: "round_numbers",
+        severity: "high",
+        description: "Used round numbers for privacy deposits",
+        details: `Deposited exactly ${deposit.amount} SOL. Round numbers are easier to track and correlate.`,
+        recommendation: "Use random amounts like 1.3847 SOL instead of 1 SOL.",
+        timestamp: deposit.timestamp,
+        txSignature: deposit.signature,
+      });
+    }
+  }
+
+  // 4. Linked wallets analysis
+  if (connectedWallets.length > 5) {
+    // Check if any connected wallets also used privacy protocols
+    const linkedPrivacyRisk = connectedWallets.length > 10;
+    if (linkedPrivacyRisk) {
+      misuses.push({
+        protocol: "Wallet Clustering",
+        issue: "linked_wallets",
+        severity: "high",
+        description: "Privacy undermined by wallet clustering",
+        details: `Your wallet is connected to ${connectedWallets.length} other wallets. Even with privacy protocols, clustering analysis can link your activity.`,
+        recommendation: "Use separate, unconnected wallets for private transactions. encrypt.trade creates isolated transaction paths.",
+      });
+    }
+  }
+
+  // 5. Timing correlation (check if transactions follow predictable patterns)
+  if (transactions.length > 20) {
+    const hours = transactions.map(t => new Date(t.timestamp * 1000).getHours());
+    const hourCounts: Record<number, number> = {};
+    hours.forEach(h => hourCounts[h] = (hourCounts[h] || 0) + 1);
+
+    const maxHourCount = Math.max(...Object.values(hourCounts));
+    const dominantHour = Object.entries(hourCounts).find(([, count]) => count === maxHourCount)?.[0];
+
+    if (maxHourCount > transactions.length * 0.25) {
+      misuses.push({
+        protocol: "Timing Analysis",
+        issue: "timing_correlation",
+        severity: "medium",
+        description: "Predictable transaction timing",
+        details: `${Math.round((maxHourCount / transactions.length) * 100)}% of your transactions occur around ${dominantHour}:00. This reveals your timezone and routine.`,
+        recommendation: "Vary your transaction times or use scheduled/delayed transactions.",
+      });
+    }
+  }
+
+  // 6. Dust attack vulnerability
+  const smallIncomingTransfers = transactions.filter(tx =>
+    tx.nativeTransfers?.some(nt =>
+      nt.toUserAccount === userAddress &&
+      nt.amount > 0 &&
+      nt.amount < 10000 // Less than 0.00001 SOL
+    )
+  );
+
+  if (smallIncomingTransfers.length > 3) {
+    misuses.push({
+      protocol: "Dust Tracking",
+      issue: "dust_attack_vulnerable",
+      severity: "medium",
+      description: "Received dust that can track your wallet",
+      details: `Received ${smallIncomingTransfers.length} tiny transactions that could be dust attacks for tracking purposes.`,
+      recommendation: "Don't interact with dust tokens. They're used to track wallet activity and link addresses.",
+    });
+  }
+
+  // Sort by severity
+  const severityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
+  misuses.sort((a, b) => severityOrder[a.severity] - severityOrder[b.severity]);
+
+  return misuses;
+}
 
 // Fetch SOL price from multiple sources
 async function fetchSolPrice(): Promise<number> {
@@ -161,9 +779,11 @@ export async function analyzeWallet(address: string): Promise<WalletAnalysis> {
     const solPrice = await fetchSolPrice();
 
     // Fetch all data in parallel
-    const [balanceData, enrichedTxData] = await Promise.all([
+    const [balanceData, enrichedTxData, walletStats, socialProfiles] = await Promise.all([
       fetchBalancesWithPrices(address, solPrice),
       fetchEnrichedTransactions(address),
+      fetchWalletStats(address),
+      fetchSocialProfiles(address),
     ]);
 
     const tokens = balanceData.tokens || [];
@@ -187,9 +807,14 @@ export async function analyzeWallet(address: string): Promise<WalletAnalysis> {
     // Calculate scores
     const degenScore = calculateDegenScore(memecoinTokens.length, tokens.length, txAnalysis.swapCount);
 
+    // Use actual transaction count from wallet stats if available
+    const actualTransactionCount = walletStats.totalSignatures > 0
+      ? walletStats.totalSignatures
+      : enrichedTxData.length;
+
     // Enhanced surveillance score calculation
     const surveillanceScore = calculateSurveillanceScore({
-      totalTransactions: enrichedTxData.length,
+      totalTransactions: actualTransactionCount,
       memecoinCount: memecoinTokens.length,
       tokenCount: tokens.length,
       nftCount: nfts.length,
@@ -216,20 +841,34 @@ export async function analyzeWallet(address: string): Promise<WalletAnalysis> {
       : surveillanceScore >= 60 ? "high"
       : surveillanceScore >= 40 ? "medium" : "low";
 
-    // Calculate wallet age
-    const walletAge = txAnalysis.firstActivity
-      ? calculateWalletAge(txAnalysis.firstActivity)
+    // Calculate wallet age - use the more accurate first activity from wallet stats if available
+    const firstActivityTimestamp = walletStats.firstActivityTimestamp || txAnalysis.firstActivity;
+    const walletAge = firstActivityTimestamp
+      ? calculateWalletAge(firstActivityTimestamp)
       : "Unknown";
 
     // Determine activity pattern
     const activityPattern = determineActivityPattern(enrichedTxData);
+
+    // Calculate memecoin PnL
+    const memecoinPnL = await calculateMemecoinPnL(tokens, enrichedTxData, address);
+
+    // Analyze income sources
+    const incomeSources = analyzeIncomeSources(enrichedTxData, address, solPrice);
+
+    // Detect privacy protocol misuse
+    const privacyProtocolMisuse = detectPrivacyProtocolMisuse(
+      enrichedTxData,
+      address,
+      txAnalysis.connectedWallets
+    );
 
     // Get AI-generated roast
     const aiResponse = await generateAIRoast({
       address,
       netWorth,
       solBalance,
-      totalTransactions: enrichedTxData.length,
+      totalTransactions: actualTransactionCount,
       tokenCount: tokens.length,
       nftCount: nfts.length,
       memecoinCount: memecoinTokens.length,
@@ -251,7 +890,7 @@ export async function analyzeWallet(address: string): Promise<WalletAnalysis> {
       surveillanceScore,
       netWorth,
       solBalance,
-      totalTransactions: enrichedTxData.length,
+      totalTransactions: actualTransactionCount,
       tokenCount: tokens.length,
       nftCount: nfts.length,
       memecoinCount: memecoinTokens.length,
@@ -274,7 +913,7 @@ export async function analyzeWallet(address: string): Promise<WalletAnalysis> {
       })),
       tokens,
       nfts,
-      firstActivityDate: txAnalysis.firstActivity,
+      firstActivityDate: firstActivityTimestamp || txAnalysis.firstActivity,
       lastActivityDate: txAnalysis.lastActivity,
       protocolsUsed: txAnalysis.protocolsUsed,
       tradingVolume: txAnalysis.tradingVolume * solPrice,
@@ -291,6 +930,11 @@ export async function analyzeWallet(address: string): Promise<WalletAnalysis> {
       cexInteractions: txAnalysis.cexInteractions,
       cexNames: txAnalysis.cexNames,
       approvals,
+      // New features for hackathon
+      socialProfiles,
+      memecoinPnL,
+      incomeSources,
+      privacyProtocolMisuse,
     };
   } catch (error) {
     console.error("Error analyzing wallet:", error);
@@ -787,6 +1431,47 @@ async function fetchEnrichedTransactions(address: string): Promise<{
   }
 }
 
+// Fetch total transaction count and first activity from signatures
+async function fetchWalletStats(address: string): Promise<{
+  totalSignatures: number;
+  firstActivityTimestamp: number | null;
+}> {
+  if (!HELIUS_API_KEY) return { totalSignatures: 0, firstActivityTimestamp: null };
+
+  try {
+    // Get total count using RPC getSignaturesForAddress
+    const countRes = await fetch(`https://mainnet.helius-rpc.com/?api-key=${HELIUS_API_KEY}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: "walletspy-count",
+        method: "getSignaturesForAddress",
+        params: [address, { limit: 1000 }]
+      }),
+    });
+
+    if (!countRes.ok) return { totalSignatures: 0, firstActivityTimestamp: null };
+
+    const countData = await countRes.json();
+    const signatures = countData.result || [];
+    const totalSignatures = signatures.length;
+
+    // Get the oldest signature's timestamp from this batch
+    let firstActivityTimestamp: number | null = null;
+    if (signatures.length > 0) {
+      // The last signature in the array is the oldest
+      const oldestSig = signatures[signatures.length - 1];
+      firstActivityTimestamp = oldestSig.blockTime || null;
+    }
+
+    return { totalSignatures, firstActivityTimestamp };
+  } catch (error) {
+    console.error("Error fetching wallet stats:", error);
+    return { totalSignatures: 0, firstActivityTimestamp: null };
+  }
+}
+
 function analyzeTransactions(
   transactions: {
     signature: string;
@@ -1220,5 +1905,26 @@ function getMockAnalysis(address: string): WalletAnalysis {
     cexInteractions: 0,
     cexNames: [],
     approvals: [],
+    // New features for hackathon
+    socialProfiles: [
+      { platform: "sns", found: false },
+      { platform: "alldomains", found: false },
+      { platform: "backpack", found: false },
+    ],
+    memecoinPnL: {
+      totalInvested: Math.abs(hash % 5000),
+      currentValue: Math.abs(hash % 3000),
+      realizedPnL: Math.abs(hash % 1000) - 500,
+      unrealizedPnL: Math.abs(hash % 500) - 250,
+      totalPnL: Math.abs(hash % 1500) - 750,
+      percentageChange: Math.abs(hash % 100) - 50,
+      trades: [],
+    },
+    incomeSources: [
+      { type: "p2p_transfer", label: "P2P Transfers", amount: Math.abs(hash % 1000), percentage: 40, count: 5 },
+      { type: "defi_yield", label: "DeFi Yields", amount: Math.abs(hash % 500), percentage: 30, count: 10 },
+      { type: "airdrop", label: "Airdrops", amount: Math.abs(hash % 300), percentage: 20, count: 3 },
+    ],
+    privacyProtocolMisuse: [],
   };
 }

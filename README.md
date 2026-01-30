@@ -1,4 +1,4 @@
-# WalletSpy.lol
+# WalletSpy
 
 **How Exposed Is Your Solana Wallet?**
 
@@ -22,24 +22,64 @@ Enter any Solana wallet address and get:
 
 ## Features
 
-### Wallet Scanner
+### 📊 Wallet Scanner
 - Real-time Solana blockchain analysis
+- Surveillance Score (0-100) with visual ring
 - Portfolio breakdown (SOL, tokens, NFTs)
 - Transaction history metrics
 - Connected wallet detection
 - Token approval/allowance tracking
 - CEX interaction flagging
 
+### 🔗 Social Profile Linking
+- **Solana Name Service** (.sol domains)
+- **AllDomains** (.abc, .bonk, .poor)
+- **Backpack** usernames
+- Twitter/X search integration
+
+### 💸 Memecoin PnL Tracker
+- Total invested vs current value
+- Realized & unrealized P&L
+- Biggest wins and losses
+- Individual trade history with status (holding/sold/partial)
+
+### 📈 Income Sources Breakdown
+- CEX withdrawals (KYC-linked)
+- DeFi yields
+- Airdrop claims
+- NFT sales
+- P2P transfers
+- Staking rewards
+
+### 🛡️ Privacy Protocol Misuse Detection
+- Quick withdrawals (timing analysis vulnerability)
+- Same amount patterns
+- Round number deposits
+- Wallet clustering risks
+- Predictable transaction timing
+- Dust attack vulnerability
+
+### 🤖 AI Roasting
+- Google Gemini-powered personality analysis
+- Wallet archetypes (Diamond Hands, Paper Hands, Memecoin Degen, etc.)
+- Shareable verdicts for Twitter/X
+
+### 📱 Tabbed UI Experience
+- **Overview** — Score, roast, activity stats
+- **Exposure** — Social links, connected wallets, CEX detection
+- **Financials** — Memecoin PnL, income sources
+- **Privacy** — Protocol misuse, concerns, approvals
+- **Details** — NFTs, protocols used
+
+### 🎴 Shareable Report Card
+- Generate downloadable surveillance report
+- Share on social media
+
 ### Privacy Education
 - 5-level gamified learning path
 - Progress tracking with achievements
 - Interactive quizzes
 - From "Noob" to "Ghost Mode"
-
-### AI Roasting
-- Google Gemini-powered personality analysis
-- Wallet archetypes (Diamond Hands, Paper Hands, Memecoin Degen, etc.)
-- Shareable verdicts for Twitter/X
 
 ### Leaderboard
 - Wall of Exposure rankings
@@ -130,12 +170,16 @@ The exposure score (0-100%) is calculated based on:
 
 WalletSpy identifies common privacy vulnerabilities:
 
-- **CEX Linkage** — Direct deposits/withdrawals link to your identity
-- **Wallet Clustering** — On-chain analysis can group your wallets
-- **Timing Patterns** — Transaction times reveal your timezone
-- **Round Numbers** — Easier to trace through mixers
-- **Token Approvals** — Unlimited spending permissions are risky
-- **High Visibility Wealth** — Makes you a phishing target
+| Issue | Severity | Description |
+|-------|----------|-------------|
+| **Quick Withdrawals** | Critical | Withdrew from mixer within 24 hours |
+| **Same Amount Pattern** | Critical | Deposit and withdrawal amounts match |
+| **Round Numbers** | High | Using 1.0 ETH instead of 1.3847 |
+| **Wallet Clustering** | High | Connected to 10+ other wallets |
+| **Timing Correlation** | Medium | 25%+ transactions at same hour |
+| **Dust Attack Vulnerable** | Medium | Received tracking dust |
+| **CEX Linkage** | Critical | Direct deposits/withdrawals to KYC exchanges |
+| **Token Approvals** | High | Unlimited spending permissions |
 
 ---
 
@@ -145,23 +189,29 @@ WalletSpy identifies common privacy vulnerabilities:
 walletspy/
 ├── src/
 │   ├── app/
-│   │   ├── page.tsx          # Landing page
-│   │   ├── scan/page.tsx     # Wallet scanner
-│   │   ├── learn/page.tsx    # Education hub
+│   │   ├── page.tsx              # Landing page
+│   │   ├── scan/page.tsx         # Wallet scanner
+│   │   ├── learn/page.tsx        # Education hub
 │   │   ├── leaderboard/page.tsx
-│   │   └── api/roast/route.ts # AI roast endpoint
+│   │   └── api/roast/route.ts    # AI roast endpoint
 │   ├── components/
-│   │   ├── landing/          # Homepage components
-│   │   ├── scanner/          # Scan results UI
-│   │   ├── education/        # Learning levels
-│   │   └── ui/               # Reusable components
+│   │   ├── landing/              # Homepage components
+│   │   ├── scanner/
+│   │   │   ├── ScanResults.tsx   # Main tabbed results UI
+│   │   │   ├── SocialProfilesCard.tsx
+│   │   │   ├── MemecoinPnLCard.tsx
+│   │   │   ├── IncomeSourcesCard.tsx
+│   │   │   ├── PrivacyMisuseCard.tsx
+│   │   │   └── ShareableReportCard.tsx
+│   │   ├── education/            # Learning levels
+│   │   └── ui/                   # Reusable components
 │   ├── lib/
-│   │   ├── scanner.ts        # Core analysis logic
-│   │   ├── helius.ts         # Blockchain data fetching
-│   │   └── utils.ts          # Helpers
+│   │   ├── scanner.ts            # Core analysis + new features
+│   │   ├── helius.ts             # Blockchain data fetching
+│   │   └── utils.ts              # Helpers
 │   └── types/
-│       └── index.ts          # TypeScript definitions
-├── public/                   # Static assets
+│       └── index.ts              # TypeScript definitions
+├── public/                       # Static assets
 └── package.json
 ```
 
@@ -244,4 +294,4 @@ WalletSpy.lol is an educational tool designed to raise awareness about blockchai
 
 ---
 
-Built with paranoia and dark humor for the Solana Hackathon
+Built with paranoia and dark humor for the Encrypt Hackathon — **Track 1: Educate users about mass financial surveillance**

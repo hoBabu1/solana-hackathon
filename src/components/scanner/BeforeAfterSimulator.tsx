@@ -146,18 +146,6 @@ export function BeforeAfterSimulator({ netWorth }: BeforeAfterSimulatorProps) {
                           <watcher.icon className="w-4 h-4" />
                         </motion.div>
                         <span className="text-[10px] text-white/60">{watcher.label}</span>
-                        {/* Line to center */}
-                        <motion.div
-                          className="absolute w-px bg-gradient-to-b from-red-500/50 to-transparent"
-                          style={{
-                            height: "40px",
-                            top: "100%",
-                            left: "50%",
-                            transform: "translateX(-50%)",
-                          }}
-                          animate={{ opacity: [0.3, 0.8, 0.3] }}
-                          transition={{ duration: 1, repeat: Infinity }}
-                        />
                       </div>
                     </motion.div>
                   );

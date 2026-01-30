@@ -245,11 +245,11 @@ export default function ComparePage() {
                 <button
                   onClick={() => {
                     setWallet1("APJGCFA8JkT4gapvRU4G76ugGXYkFAfdfFKDQDWdHVrs");
-                    setWallet2("toly.sol");
+                    setWallet2("2iW2EdjuniFy5cA4WsVLea9MJNdpFTnCV5JxXSaTkNVY");
                   }}
                   className="px-3 py-1.5 text-xs bg-white/5 hover:bg-white/10 rounded-full transition-colors"
                 >
-                  Default vs Toly
+                  Default vs Demo
                 </button>
               </div>
             </div>

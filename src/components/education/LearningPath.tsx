@@ -101,13 +101,13 @@ export function LearningPath({ levels, currentLevel, onSelectLevel }: LearningPa
                       transition={{ delay: 0.5 }}
                       className={cn(
                         "absolute -top-12 whitespace-nowrap bg-white text-black text-xs font-bold px-3 py-1.5 rounded-full shadow-lg",
-                        isEven ? "left-0" : "right-0"
+                        isEven ? "-left-8" : "-right-8"
                       )}
                     >
                       You are here! 📍
                       <div className={cn(
                         "absolute -bottom-1 w-2 h-2 bg-white rotate-45",
-                        isEven ? "left-4" : "right-4"
+                        isEven ? "left-12" : "right-12"
                       )} />
                     </motion.div>
                     {/* Sparkles */}

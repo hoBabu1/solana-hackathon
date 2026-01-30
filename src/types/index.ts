@@ -40,6 +40,11 @@ export interface WalletAnalysis {
   cexInteractions: number; // Number of interactions with centralized exchanges
   cexNames: string[]; // Names of CEXes detected
   approvals: TokenApproval[]; // Token approvals (delegated spending permissions)
+  // New features for hackathon
+  socialProfiles: SocialProfile[]; // Linked social profiles
+  memecoinPnL: MemecoinPnL; // Memecoin profit/loss tracker
+  incomeSources: IncomeSource[]; // Breakdown of income sources
+  privacyProtocolMisuse: PrivacyProtocolMisuse[]; // Privacy protocol usage mistakes
 }
 
 export interface TokenHolding {
@@ -126,4 +131,64 @@ export interface TokenApproval {
   tokenDecimals: number;
   isUnlimited: boolean;
   usdValue?: number;
+}
+
+// Social Profile Linking
+export interface SocialProfile {
+  platform: "twitter" | "sns" | "ens" | "backpack" | "alldomains";
+  found: boolean;
+  identifier?: string; // username, domain name, etc.
+  url?: string;
+  verified?: boolean;
+  profileImage?: string;
+}
+
+// Memecoin PnL Tracking
+export interface MemecoinPnL {
+  totalInvested: number; // Total USD spent buying memecoins
+  currentValue: number; // Current USD value of memecoin holdings
+  realizedPnL: number; // Profit/loss from sold memecoins
+  unrealizedPnL: number; // Profit/loss from held memecoins
+  totalPnL: number; // Total profit/loss
+  percentageChange: number; // Percentage change
+  trades: MemecoinTrade[];
+  biggestWin?: MemecoinTrade;
+  biggestLoss?: MemecoinTrade;
+}
+
+export interface MemecoinTrade {
+  token: string;
+  tokenMint: string;
+  tokenLogoUrl?: string;
+  buyAmount: number; // Amount bought
+  buyValueUsd: number; // USD value when bought
+  currentAmount: number; // Current holdings
+  currentValueUsd: number; // Current USD value
+  soldAmount: number; // Amount sold
+  soldValueUsd: number; // USD received from selling
+  pnl: number; // Profit/loss
+  pnlPercentage: number;
+  status: "holding" | "sold" | "partial";
+}
+
+// Income Sources
+export interface IncomeSource {
+  type: "cex_withdrawal" | "defi_yield" | "nft_sale" | "airdrop" | "p2p_transfer" | "staking_reward" | "swap_profit" | "unknown";
+  label: string;
+  amount: number; // USD value
+  percentage: number; // Percentage of total income
+  count: number; // Number of transactions
+  icon?: string;
+}
+
+// Privacy Protocol Misuse Detection
+export interface PrivacyProtocolMisuse {
+  protocol: string; // e.g., "Tornado Cash", "Railway", etc.
+  issue: "quick_withdrawal" | "same_amount" | "round_numbers" | "linked_wallets" | "timing_correlation" | "dust_attack_vulnerable";
+  severity: "critical" | "high" | "medium" | "low";
+  description: string;
+  details: string;
+  recommendation: string;
+  timestamp?: number;
+  txSignature?: string;
 }

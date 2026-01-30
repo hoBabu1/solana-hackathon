@@ -79,7 +79,7 @@ export function ShareableReportCard({
     const text = `${getRiskEmoji()} My wallet is ${surveillanceScore}% exposed!\n\n${
       personality ? `Personality: "${personality}"\n\n` : ""
     }Find out how exposed YOUR wallet is on WalletSpy:`;
-    const url = "https://walletspy.xyz";
+    const url = "https://solana-hackathon-one.vercel.app";
     window.open(
       `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`,
       "_blank"
@@ -87,7 +87,7 @@ export function ShareableReportCard({
   };
 
   const handleCopyLink = async () => {
-    await navigator.clipboard.writeText(`https://walletspy.xyz/scan?address=${address}`);
+    await navigator.clipboard.writeText(`https://solana-hackathon-one.vercel.app/scan?address=${address}`);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -113,7 +113,7 @@ export function ShareableReportCard({
               <Eye className="w-6 h-6 text-[#00fff9]" />
               <span className="font-bold text-lg">WalletSpy</span>
             </div>
-            <span className="text-xs text-white/40">walletspy.xyz</span>
+            <span className="text-xs text-white/40">solana-hackathon-one.vercel.app</span>
           </div>
 
           {/* Score */}
