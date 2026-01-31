@@ -1,22 +1,54 @@
-# WalletSpy
+# WalletSpy.lol
 
-**How Exposed Is Your Solana Wallet?**
+**Your wallet isn't anonymous - WalletSpy proves it, roasts you for it, and teaches you how to fix it.**
 
-A privacy-education platform that analyzes Solana wallets to reveal their "exposure level" — using dark humor and AI-powered roasts to make blockchain privacy awareness actually engaging.
+A privacy-education platform that analyzes Solana wallets to reveal there "exposure level"  using dark humor and AI-powered roasts to make blockchain privacy awareness actually engaging.
 
-**Live Demo:** [https://solana-hackathon-one.vercel.app/](https://solana-hackathon-one.vercel.app/)
+---
+
+## 🎬 Videos & Live Demo
+
+| | Link |
+|--|------|
+| **🌐 Live Demo** | [https://solana-hackathon-one.vercel.app/](https://solana-hackathon-one.vercel.app/) |
+| **📽️ PPT Presentation** | [https://youtu.be/sc2ds5biT8k](https://youtu.be/sc2ds5biT8k?si=gMI11NvJGECntuF0) |
+| **🎥 Demo Video** | [https://youtu.be/QaZ58nyLoy0](https://youtu.be/QaZ58nyLoy0?si=enk4RJ2H1iRboGwx) |
+
+---
+
+## 🚀 Quick Start
+
+```bash
+# Clone the repo
+git clone https://github.com/hoBabu1/solana-hackathon.git
+cd solana-hackathon
+
+# Install dependencies
+npm install
+
+# Setup environment variables
+cp .env.example .env.local
+# Add your API keys (see below)
+
+# Run the dev server
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) and your good to go!
 
 ---
 
 ## What is WalletSpy?
 
-WalletSpy.lol is a hackathon project that flips the script on blockchain transparency. Instead of celebrating "open ledgers," we show users exactly how much of their financial life is visible to anyone with an internet connection.
+So basically WalletSpy is a hackathon project i built for Encrypt Hackathon (Track 1 & Track 2). Instead of celebrating "open ledgers," i wanted to show users exactly how much of their financial life is visible to anyone with internet connection.
 
 Enter any Solana wallet address and get:
-- **Surveillance Score (0-100%)** — How exposed you really are
+- **Surveillance Score (0-100%)** — How exposed you realy are
 - **AI-Generated Roast** — Brutal but educational commentary on your on-chain behavior
 - **Privacy Mistakes** — Specific vulnerabilities and how to fix them
 - **Wallet Personality** — What your transactions say about you
+
+The whole idea is to make privacy awareness fun and engaging. Nobody wants to read boring articles about blockchain transparency, but everyone wants to get roasted lol.
 
 ---
 
@@ -29,7 +61,7 @@ Enter any Solana wallet address and get:
 - Transaction history metrics
 - Connected wallet detection
 - Token approval/allowance tracking
-- CEX interaction flagging
+- CEX interaction flagging (this is critical for privacy!)
 
 ### 🔗 Social Profile Linking
 - **Solana Name Service** (.sol domains)
@@ -37,19 +69,23 @@ Enter any Solana wallet address and get:
 - **Backpack** usernames
 - Twitter/X search integration
 
+If your wallet is linked to your identity somwhere, we will probably find it.
+
 ### 💸 Memecoin PnL Tracker
 - Total invested vs current value
 - Realized & unrealized P&L
 - Biggest wins and losses
 - Individual trade history with status (holding/sold/partial)
 
+Yes we can see your memecoin losses. Sorry not sorry.
+
 ### 📈 Income Sources Breakdown
-- CEX withdrawals (KYC-linked)
+- CEX withdrawals (KYC-linked) - **this is the big one**
 - DeFi yields
 - Airdrop claims
 - NFT sales
 - P2P transfers
-- Staking rewards
+
 
 ### 🛡️ Privacy Protocol Misuse Detection
 - Quick withdrawals (timing analysis vulnerability)
@@ -59,32 +95,20 @@ Enter any Solana wallet address and get:
 - Predictable transaction timing
 - Dust attack vulnerability
 
-### 🤖 AI Roasting
+### 🤖 AI Roasting (my favorite feature)
 - Google Gemini-powered personality analysis
 - Wallet archetypes (Diamond Hands, Paper Hands, Memecoin Degen, etc.)
 - Shareable verdicts for Twitter/X
+- Its brutal but its honest
 
-### 📱 Tabbed UI Experience
-- **Overview** — Score, roast, activity stats
-- **Exposure** — Social links, connected wallets, CEX detection
-- **Financials** — Memecoin PnL, income sources
-- **Privacy** — Protocol misuse, concerns, approvals
-- **Details** — NFTs, protocols used
-
-### 🎴 Shareable Report Card
-- Generate downloadable surveillance report
-- Share on social media
-
-### Privacy Education
+### 📚 Privacy Education Hub (Track 2)
 - 5-level gamified learning path
 - Progress tracking with achievements
 - Interactive quizzes
 - From "Noob" to "Ghost Mode"
+- ELI5 explanations for non-technical users
 
-### Leaderboard
-- Wall of Exposure rankings
-- Community privacy benchmarks
-- Risk level categorization
+No jargon, just clarity.
 
 ---
 
@@ -95,32 +119,23 @@ Enter any Solana wallet address and get:
 | **Framework** | Next.js 16, React 19, TypeScript |
 | **Styling** | Tailwind CSS 4, Framer Motion |
 | **Web3** | @solana/web3.js, Solana Wallet Adapter |
-| **APIs** | Helius (RPC/DAS), Jupiter, Solscan, CoinGecko |
+| **Primary API** | **Helius** (RPC/DAS, Enriched Transactions) |
+| **Other APIs** | Jupiter, Solscan, CoinGecko |
 | **AI** | Google Gemini 1.5 Flash |
+
+### Helius API Integration
+
+Helius is the backbone of this project. I used it for:
+- `getAssetsByOwner` — Fetching tokens, NFTs, balances with USD prices
+- `getTokenAccountsByOwner` — Token approvals and delegation detection
+- `getSignaturesForAddress` — Transaction history and wallet age
+- **Enriched Transaction API** — Enhanced transaction data with transfers, fees, timestamps
+
+Without Helius this project wouldnt be possible tbh. The DAS API is super powerful for getting all asset data in one call.
 
 ---
 
-## Getting Started
-
-### Prerequisites
-- Node.js 18+
-- npm/yarn/pnpm/bun
-
-### Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/your-username/walletspy.git
-cd walletspy
-
-# Install dependencies
-npm install
-
-# Set up environment variables
-cp .env.example .env.local
-```
-
-### Environment Variables
+## Environment Variables
 
 ```env
 NEXT_PUBLIC_HELIUS_API_KEY=your_helius_api_key
@@ -129,17 +144,9 @@ NEXT_PUBLIC_SOLSCAN_API_KEY=your_solscan_pro_key  # Optional
 ```
 
 **Get API Keys:**
-- [Helius](https://helius.dev/) — Free tier available
+- [Helius](https://helius.dev/) — Free tier available (this is what i used)
 - [Google AI Studio](https://aistudio.google.com/) — Free Gemini API access
 - [Solscan Pro](https://pro.solscan.io/) — Optional, for enhanced data
-
-### Run Development Server
-
-```bash
-npm run dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) to view the app.
 
 ---
 
@@ -174,7 +181,7 @@ WalletSpy identifies common privacy vulnerabilities:
 |-------|----------|-------------|
 | **Quick Withdrawals** | Critical | Withdrew from mixer within 24 hours |
 | **Same Amount Pattern** | Critical | Deposit and withdrawal amounts match |
-| **Round Numbers** | High | Using 1.0 ETH instead of 1.3847 |
+| **Round Numbers** | High | Using 1.0 SOL instead of 1.3847 |
 | **Wallet Clustering** | High | Connected to 10+ other wallets |
 | **Timing Correlation** | Medium | 25%+ transactions at same hour |
 | **Dust Attack Vulnerable** | Medium | Received tracking dust |
@@ -183,67 +190,28 @@ WalletSpy identifies common privacy vulnerabilities:
 
 ---
 
-## Project Structure
 
-```
-walletspy/
-├── src/
-│   ├── app/
-│   │   ├── page.tsx              # Landing page
-│   │   ├── scan/page.tsx         # Wallet scanner
-│   │   ├── learn/page.tsx        # Education hub
-│   │   ├── leaderboard/page.tsx
-│   │   └── api/roast/route.ts    # AI roast endpoint
-│   ├── components/
-│   │   ├── landing/              # Homepage components
-│   │   ├── scanner/
-│   │   │   ├── ScanResults.tsx   # Main tabbed results UI
-│   │   │   ├── SocialProfilesCard.tsx
-│   │   │   ├── MemecoinPnLCard.tsx
-│   │   │   ├── IncomeSourcesCard.tsx
-│   │   │   ├── PrivacyMisuseCard.tsx
-│   │   │   └── ShareableReportCard.tsx
-│   │   ├── education/            # Learning levels
-│   │   └── ui/                   # Reusable components
-│   ├── lib/
-│   │   ├── scanner.ts            # Core analysis + new features
-│   │   ├── helius.ts             # Blockchain data fetching
-│   │   └── utils.ts              # Helpers
-│   └── types/
-│       └── index.ts              # TypeScript definitions
-├── public/                       # Static assets
-└── package.json
-```
+
+## The Solution - Encrypt.Trade
+
+WalletSpy shows you the problem. But whats the solution?
+
+**[Encrypt.Trade](https://encrypt.trade/)** provides selective privacy - you can protect specific transactions without making everything private. It reduces your exposure without breaking usability.
+
+Real privacy for real users. No jargon, just protection.
 
 ---
 
-## API Integration
+## Future Vision
 
-### Helius (Primary Data Source)
-- `getAssetsByOwner` — Tokens, NFTs, balances with USD prices
-- `getTokenAccountsByOwner` — Token approvals and allowances
-- Enriched transaction history
-
-### Jupiter
-- Real-time token price aggregation
-- Supports batch pricing (100 tokens/request)
-
-### Google Gemini
-- Generates personalized wallet roasts
-- Creates wallet personality archetypes
-- Fallback templates if API unavailable
-
----
-
-## Learning Path
-
-| Level | Title | Topics Covered |
-|-------|-------|---------------|
-| 1 | Noob | Blockchain transparency basics |
-| 2 | Aware | How wallet tracking works |
-| 3 | Paranoid | Common privacy mistakes |
-| 4 | Privacy Ninja | Selective privacy solutions |
-| 5 | Ghost Mode | Advanced privacy techniques |
+Heres what im planning for Phase 2:
+- More accurate surveillance scoring algorithms
+- Cross-chain analysis (Ethereum, Base, Arbitrum)
+- Advanced wallet clustering visualization
+- Privacy improvement recommendations
+- Mobile app for on-the-go privacy checks
+- Developer API so others can integrate surveillance checks
+- Minitng NFTs to the user whoever completes the quiz 
 
 ---
 
@@ -258,25 +226,26 @@ npm run lint     # Run ESLint
 
 ---
 
-## Contributing
-
-This is a hackathon project, but contributions are welcome!
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
----
-
 ## Acknowledgments
 
-- [Helius](https://helius.dev/) — Solana RPC infrastructure
+- [Helius](https://helius.dev/) — Solana RPC infrastructure (primary data source)
 - [Jupiter](https://jup.ag/) — Token pricing
 - [Google Gemini](https://deepmind.google/technologies/gemini/) — AI generation
 - [Solana Foundation](https://solana.org/) — Blockchain platform
-- [encrypt.trade](https://encrypt.trade/) — Privacy solutions partner
+- [Encrypt.Trade](https://encrypt.trade/) — Privacy solutions partner
 
+---
 
-Built with paranoia and dark humor for the Encrypt Hackathon 
+## Know Your Developer
+
+Built by **Aman** aka **@thedhanyosmi**
+
+Twitter/X: [https://x.com/thedhanyosmi](https://x.com/thedhanyosmi)
+
+Feel free to connect! Always open to feedback, collabs, and conversations about crypto privacy.
+
+---
+
+**"Privacy Is Not a Crime. Ignorance Is."**
+
+Built with mass paranoia and dark humor for the Encrypt Hackathon 🕵️
